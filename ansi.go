@@ -1,5 +1,12 @@
 // Package ansi
 //
+// Adds support for ansi colors in the terminal.
+//
+// Provides fluent API similar to jansi library for Java (https://github.com/fusesource/jansi)
+//
+// errMsg := Ansi.A("Error: ").Fg(Red).S("File not found: %s", fileName).Reset().A("Try a different name").String()
+//
+// See https://github.com/uaraven/ansi for more details
 //
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: (c) 2022 Oleksiy Voronin <ovoronin@gmail.com>
@@ -17,7 +24,7 @@ const esc = "\033["
 
 type Attribute = int
 
-type Color = int
+type Colour = int
 
 //goland:noinspection ALL
 const (
@@ -45,222 +52,224 @@ const (
 
 //goland:noinspection ALL
 const (
-	Black Color = 0
+	Black Colour = 0
+	// SysBlack is a color from standard 7-color terminal palette
+	SysBlack Colour = 0
 	// SysRed is a color from standard 7-color terminal palette
-	SysRed Color = -1
+	SysRed Colour = -1
 	// SysGreen is a color from standard 7-color terminal palette
-	SysGreen Color = -2
+	SysGreen Colour = -2
 	// SysYellow is a color from standard 7-color terminal palette
-	SysYellow Color = -3
+	SysYellow Colour = -3
 	// SysBlue is a color from standard 7-color terminal palette
-	SysBlue Color = -4
+	SysBlue Colour = -4
 	// SysMagenta is a color from standard 7-color terminal palette
-	SysMagenta Color = -5
+	SysMagenta Colour = -5
 	// SysCyan is a color from standard 7-color terminal palette
-	SysCyan Color = -6
+	SysCyan Colour = -6
 	// SysWhite is a Red color from standard 7-color terminal palette
-	SysWhite Color = -7
+	SysWhite Colour = -7
 
-	Maroon            = 1
-	Green             = 2
-	Olive             = 3
-	Navy              = 4
-	Purple            = 5
-	Teal              = 6
-	Silver            = 7
-	Grey              = 8
-	Red               = 9
-	Lime              = 10
-	Yellow            = 11
-	Blue              = 12
-	Fuchsia           = 13
-	Aqua              = 14
-	White             = 15
-	Grey0             = 16
-	NavyBlue          = 17
-	DarkBlue          = 18
-	Blue3             = 20
-	Blue1             = 21
-	DarkGreen         = 22
-	DeepSkyBlue4      = 25
-	DodgerBlue3       = 26
-	DodgerBlue2       = 27
-	Green4            = 28
-	SpringGreen4      = 29
-	Turquoise4        = 30
-	DeepSkyBlue3      = 32
-	DodgerBlue1       = 33
-	Green3            = 34
-	SpringGreen3      = 35
-	DarkCyan          = 36
-	LightSeaGreen     = 37
-	DeepSkyBlue2      = 38
-	DeepSkyBlue1      = 39
-	SpringGreen2      = 42
-	Cyan3             = 43
-	DarkTurquoise     = 44
-	Turquoise2        = 45
-	Green1            = 46
-	SpringGreen1      = 48
-	MediumSpringGreen = 49
-	Cyan2             = 50
-	Cyan1             = 51
-	Purple4           = 55
-	Purple3           = 56
-	BlueViolet        = 57
-	Grey37            = 59
-	MediumPurple4     = 60
-	SlateBlue3        = 62
-	RoyalBlue1        = 63
-	Chartreuse4       = 64
-	PaleTurquoise4    = 66
-	SteelBlue         = 67
-	SteelBlue3        = 68
-	CornflowerBlue    = 69
-	DarkSeaGreen4     = 71
-	CadetBlue         = 72
-	SkyBlue3          = 74
-	Chartreuse3       = 76
-	PaleGreen3        = 77
-	SeaGreen3         = 78
-	Aquamarine3       = 79
-	MediumTurquoise   = 80
-	SteelBlue1        = 81
-	SeaGreen2         = 83
-	SeaGreen1         = 85
-	DarkSlateGray2    = 87
-	DarkRed           = 88
-	DarkMagenta       = 91
-	Orange4           = 94
-	LightPink4        = 95
-	Plum4             = 96
-	MediumPurple3     = 98
-	SlateBlue1        = 99
-	Wheat4            = 101
-	Grey53            = 102
-	LightSlateGrey    = 103
-	MediumPurple      = 104
-	LightSlateBlue    = 105
-	Yellow4           = 106
-	DarkSeaGreen      = 108
-	LightSkyBlue3     = 110
-	SkyBlue2          = 111
-	Chartreuse2       = 112
-	DarkSlateGray3    = 116
-	SkyBlue1          = 117
-	Chartreuse1       = 118
-	LightGreen        = 120
-	Aquamarine1       = 122
-	DarkSlateGray1    = 123
-	DeepPink4         = 125
-	MediumVioletRed   = 126
-	DarkViolet        = 128
-	MediumOrchid3     = 133
-	MediumOrchid      = 134
-	DarkGoldenrod     = 136
-	RosyBrown         = 138
-	Grey63            = 139
-	MediumPurple2     = 140
-	MediumPurple1     = 141
-	DarkKhaki         = 143
-	NavajoWhite3      = 144
-	Grey69            = 145
-	LightSteelBlue3   = 146
-	LightSteelBlue    = 147
-	DarkOliveGreen3   = 149
-	DarkSeaGreen3     = 150
-	LightCyan3        = 152
-	LightSkyBlue1     = 153
-	GreenYellow       = 154
-	DarkOliveGreen2   = 155
-	PaleGreen1        = 156
-	DarkSeaGreen1     = 158
-	PaleTurquoise1    = 159
-	Red3              = 160
-	DeepPink3         = 162
-	Magenta3          = 164
-	DarkOrange3       = 166
-	IndianRed         = 167
-	HotPink3          = 168
-	HotPink2          = 169
-	Orchid            = 170
-	Orange3           = 172
-	LightSalmon3      = 173
-	LightPink3        = 174
-	Pink3             = 175
-	Plum3             = 176
-	Violet            = 177
-	Gold3             = 178
-	LightGoldenrod3   = 179
-	Tan               = 180
-	MistyRose3        = 181
-	Thistle3          = 182
-	Plum2             = 183
-	Yellow3           = 184
-	Khaki3            = 185
-	LightYellow3      = 187
-	Grey84            = 188
-	LightSteelBlue1   = 189
-	Yellow2           = 190
-	DarkOliveGreen1   = 192
-	Honeydew2         = 194
-	LightCyan1        = 195
-	Red1              = 196
-	DeepPink2         = 197
-	DeepPink1         = 199
-	Magenta2          = 200
-	Magenta1          = 201
-	OrangeRed1        = 202
-	IndianRed1        = 204
-	HotPink           = 206
-	MediumOrchid1     = 207
-	DarkOrange        = 208
-	Salmon1           = 209
-	LightCoral        = 210
-	PaleVioletRed1    = 211
-	Orchid2           = 212
-	Orchid1           = 213
-	Orange1           = 214
-	SandyBrown        = 215
-	LightSalmon1      = 216
-	LightPink1        = 217
-	Pink1             = 218
-	Plum1             = 219
-	Gold1             = 220
-	LightGoldenrod2   = 222
-	NavajoWhite1      = 223
-	MistyRose1        = 224
-	Thistle1          = 225
-	Yellow1           = 226
-	LightGoldenrod1   = 227
-	Khaki1            = 228
-	Wheat1            = 229
-	Cornsilk1         = 230
-	Grey100           = 231
-	Grey3             = 232
-	Grey7             = 233
-	Grey11            = 234
-	Grey15            = 235
-	Grey19            = 236
-	Grey23            = 237
-	Grey27            = 238
-	Grey30            = 239
-	Grey35            = 240
-	Grey39            = 241
-	Grey42            = 242
-	Grey46            = 243
-	Grey50            = 244
-	Grey54            = 245
-	Grey58            = 246
-	Grey62            = 247
-	Grey66            = 248
-	Grey70            = 249
-	Grey74            = 250
-	Grey78            = 251
-	Grey82            = 252
-	Grey85            = 253
-	Grey89            = 254
-	Grey93            = 255
+	Maroon            Colour = 1
+	Green             Colour = 2
+	Olive             Colour = 3
+	Navy              Colour = 4
+	Purple            Colour = 5
+	Teal              Colour = 6
+	Silver            Colour = 7
+	Grey              Colour = 8
+	Red               Colour = 9
+	Lime              Colour = 10
+	Yellow            Colour = 11
+	Blue              Colour = 12
+	Fuchsia           Colour = 13
+	Aqua              Colour = 14
+	White             Colour = 15
+	Grey0             Colour = 16
+	NavyBlue          Colour = 17
+	DarkBlue          Colour = 18
+	Blue3             Colour = 20
+	Blue1             Colour = 21
+	DarkGreen         Colour = 22
+	DeepSkyBlue4      Colour = 25
+	DodgerBlue3       Colour = 26
+	DodgerBlue2       Colour = 27
+	Green4            Colour = 28
+	SpringGreen4      Colour = 29
+	Turquoise4        Colour = 30
+	DeepSkyBlue3      Colour = 32
+	DodgerBlue1       Colour = 33
+	Green3            Colour = 34
+	SpringGreen3      Colour = 35
+	DarkCyan          Colour = 36
+	LightSeaGreen     Colour = 37
+	DeepSkyBlue2      Colour = 38
+	DeepSkyBlue1      Colour = 39
+	SpringGreen2      Colour = 42
+	Cyan3             Colour = 43
+	DarkTurquoise     Colour = 44
+	Turquoise2        Colour = 45
+	Green1            Colour = 46
+	SpringGreen1      Colour = 48
+	MediumSpringGreen Colour = 49
+	Cyan2             Colour = 50
+	Cyan1             Colour = 51
+	Purple4           Colour = 55
+	Purple3           Colour = 56
+	BlueViolet        Colour = 57
+	Grey37            Colour = 59
+	MediumPurple4     Colour = 60
+	SlateBlue3        Colour = 62
+	RoyalBlue1        Colour = 63
+	Chartreuse4       Colour = 64
+	PaleTurquoise4    Colour = 66
+	SteelBlue         Colour = 67
+	SteelBlue3        Colour = 68
+	CornflowerBlue    Colour = 69
+	DarkSeaGreen4     Colour = 71
+	CadetBlue         Colour = 72
+	SkyBlue3          Colour = 74
+	Chartreuse3       Colour = 76
+	PaleGreen3        Colour = 77
+	SeaGreen3         Colour = 78
+	Aquamarine3       Colour = 79
+	MediumTurquoise   Colour = 80
+	SteelBlue1        Colour = 81
+	SeaGreen2         Colour = 83
+	SeaGreen1         Colour = 85
+	DarkSlateGray2    Colour = 87
+	DarkRed           Colour = 88
+	DarkMagenta       Colour = 91
+	Orange4           Colour = 94
+	LightPink4        Colour = 95
+	Plum4             Colour = 96
+	MediumPurple3     Colour = 98
+	SlateBlue1        Colour = 99
+	Wheat4            Colour = 101
+	Grey53            Colour = 102
+	LightSlateGrey    Colour = 103
+	MediumPurple      Colour = 104
+	LightSlateBlue    Colour = 105
+	Yellow4           Colour = 106
+	DarkSeaGreen      Colour = 108
+	LightSkyBlue3     Colour = 110
+	SkyBlue2          Colour = 111
+	Chartreuse2       Colour = 112
+	DarkSlateGray3    Colour = 116
+	SkyBlue1          Colour = 117
+	Chartreuse1       Colour = 118
+	LightGreen        Colour = 120
+	Aquamarine1       Colour = 122
+	DarkSlateGray1    Colour = 123
+	DeepPink4         Colour = 125
+	MediumVioletRed   Colour = 126
+	DarkViolet        Colour = 128
+	MediumOrchid3     Colour = 133
+	MediumOrchid      Colour = 134
+	DarkGoldenrod     Colour = 136
+	RosyBrown         Colour = 138
+	Grey63            Colour = 139
+	MediumPurple2     Colour = 140
+	MediumPurple1     Colour = 141
+	DarkKhaki         Colour = 143
+	NavajoWhite3      Colour = 144
+	Grey69            Colour = 145
+	LightSteelBlue3   Colour = 146
+	LightSteelBlue    Colour = 147
+	DarkOliveGreen3   Colour = 149
+	DarkSeaGreen3     Colour = 150
+	LightCyan3        Colour = 152
+	LightSkyBlue1     Colour = 153
+	GreenYellow       Colour = 154
+	DarkOliveGreen2   Colour = 155
+	PaleGreen1        Colour = 156
+	DarkSeaGreen1     Colour = 158
+	PaleTurquoise1    Colour = 159
+	Red3              Colour = 160
+	DeepPink3         Colour = 162
+	Magenta3          Colour = 164
+	DarkOrange3       Colour = 166
+	IndianRed         Colour = 167
+	HotPink3          Colour = 168
+	HotPink2          Colour = 169
+	Orchid            Colour = 170
+	Orange3           Colour = 172
+	LightSalmon3      Colour = 173
+	LightPink3        Colour = 174
+	Pink3             Colour = 175
+	Plum3             Colour = 176
+	Violet            Colour = 177
+	Gold3             Colour = 178
+	LightGoldenrod3   Colour = 179
+	Tan               Colour = 180
+	MistyRose3        Colour = 181
+	Thistle3          Colour = 182
+	Plum2             Colour = 183
+	Yellow3           Colour = 184
+	Khaki3            Colour = 185
+	LightYellow3      Colour = 187
+	Grey84            Colour = 188
+	LightSteelBlue1   Colour = 189
+	Yellow2           Colour = 190
+	DarkOliveGreen1   Colour = 192
+	Honeydew2         Colour = 194
+	LightCyan1        Colour = 195
+	Red1              Colour = 196
+	DeepPink2         Colour = 197
+	DeepPink1         Colour = 199
+	Magenta2          Colour = 200
+	Magenta1          Colour = 201
+	OrangeRed1        Colour = 202
+	IndianRed1        Colour = 204
+	HotPink           Colour = 206
+	MediumOrchid1     Colour = 207
+	DarkOrange        Colour = 208
+	Salmon1           Colour = 209
+	LightCoral        Colour = 210
+	PaleVioletRed1    Colour = 211
+	Orchid2           Colour = 212
+	Orchid1           Colour = 213
+	Orange1           Colour = 214
+	SandyBrown        Colour = 215
+	LightSalmon1      Colour = 216
+	LightPink1        Colour = 217
+	Pink1             Colour = 218
+	Plum1             Colour = 219
+	Gold1             Colour = 220
+	LightGoldenrod2   Colour = 222
+	NavajoWhite1      Colour = 223
+	MistyRose1        Colour = 224
+	Thistle1          Colour = 225
+	Yellow1           Colour = 226
+	LightGoldenrod1   Colour = 227
+	Khaki1            Colour = 228
+	Wheat1            Colour = 229
+	Cornsilk1         Colour = 230
+	Grey100           Colour = 231
+	Grey3             Colour = 232
+	Grey7             Colour = 233
+	Grey11            Colour = 234
+	Grey15            Colour = 235
+	Grey19            Colour = 236
+	Grey23            Colour = 237
+	Grey27            Colour = 238
+	Grey30            Colour = 239
+	Grey35            Colour = 240
+	Grey39            Colour = 241
+	Grey42            Colour = 242
+	Grey46            Colour = 243
+	Grey50            Colour = 244
+	Grey54            Colour = 245
+	Grey58            Colour = 246
+	Grey62            Colour = 247
+	Grey66            Colour = 248
+	Grey70            Colour = 249
+	Grey74            Colour = 250
+	Grey78            Colour = 251
+	Grey82            Colour = 252
+	Grey85            Colour = 253
+	Grey89            Colour = 254
+	Grey93            Colour = 255
 )
 
 type AnsiPrinter struct {
@@ -268,19 +277,19 @@ type AnsiPrinter struct {
 	content strings.Builder
 }
 
-// Ansi creates a new AnsiPrinter. It doesn't assume anything about the device that the output will be
+// NewAnsi creates a new AnsiPrinter. It doesn't assume anything about the device that the output will be
 // directed to.
-func Ansi() *AnsiPrinter {
+func NewAnsi() *AnsiPrinter {
 	return &AnsiPrinter{enabled: true}
 }
 
-// A is a default instance of AnsiPrinter
-var A = Ansi()
+// Ansi is a default instance of AnsiPrinter
+var Ansi = NewAnsi()
 
-// AnsiFor creates a new AnsiPrinter for a given device. It will not automatically print to this device,
+// NewAnsiFor creates a new AnsiPrinter for a given device. It will not automatically print to this device,
 // but it will disable ANSI colors if the device doesn't seem to support them, like when redirecting
 // standard output into a file or piping it to another program
-func AnsiFor(f *os.File) *AnsiPrinter {
+func NewAnsiFor(f *os.File) *AnsiPrinter {
 	o, err := f.Stat()
 	if err != nil {
 		panic(err)
@@ -326,7 +335,7 @@ func (ap *AnsiPrinter) Reset() *AnsiPrinter {
 
 // Fg sets foreground color. When using SysColor constants, like SysRed or SysYellow, the most basic and most compatible
 // ANSI sequence will be used. Using any of other color constants or integer values will use 256-color ANSI sequence
-func (ap *AnsiPrinter) Fg(color Color) *AnsiPrinter {
+func (ap *AnsiPrinter) Fg(color Colour) *AnsiPrinter {
 	if color < 0 {
 		ap.writeAnsiSeq(30 + (-color))
 	} else {
@@ -336,7 +345,7 @@ func (ap *AnsiPrinter) Fg(color Color) *AnsiPrinter {
 }
 
 // Bg sets background color to one of standard 8 colors
-func (ap *AnsiPrinter) Bg(color Color) *AnsiPrinter {
+func (ap *AnsiPrinter) Bg(color Colour) *AnsiPrinter {
 	if color < 0 {
 		ap.writeAnsiSeq(40 + (-color))
 	} else {
@@ -348,7 +357,7 @@ func (ap *AnsiPrinter) Bg(color Color) *AnsiPrinter {
 // FgHi sets foreground color to the high intensity version of one of standard 8 colors
 //
 // If used with one of 256 color codes, it will just set the color, without modifying the intensity
-func (ap *AnsiPrinter) FgHi(color Color) *AnsiPrinter {
+func (ap *AnsiPrinter) FgHi(color Colour) *AnsiPrinter {
 	if color < 0 {
 		color = -color
 		ap.writeAnsiSeq(90 + color)
@@ -366,7 +375,7 @@ func (ap *AnsiPrinter) Attr(attr Attribute) *AnsiPrinter {
 // BgHi sets background color to the high intensity version of one of standard 8 colors
 //
 // If used with one of 256 color codes, it will just set the color, without modifying the intensity
-func (ap *AnsiPrinter) BgHi(color Color) *AnsiPrinter {
+func (ap *AnsiPrinter) BgHi(color Colour) *AnsiPrinter {
 	if color < 0 {
 		color = -color
 		ap.writeAnsiSeq(100 + color)
@@ -436,6 +445,20 @@ func (ap *AnsiPrinter) BgRgb3I(rgb int) *AnsiPrinter {
 	return ap.Bg(color)
 }
 
+// FgGray sets foreground color that is the shade of gray. intensity is a value in a range [0..1]. It is converted to
+// one of standard 24 gray shades in the 256-color palette
+func (ap *AnsiPrinter) FgGray(intensity float64) *AnsiPrinter {
+	gray := ap.shadeOfGrayColor(intensity)
+	return ap.Fg(gray)
+}
+
+// BgGray sets background color that is the shade of gray. intensity is a value in a range [0..1]. It is converted to
+// one of standard 24 gray shades in the 256-color palette
+func (ap *AnsiPrinter) BgGray(intensity float64) *AnsiPrinter {
+	gray := ap.shadeOfGrayColor(intensity)
+	return ap.Bg(gray)
+}
+
 // A adds text to the AnsiPrinter's buffer. The text will be output with the current colors and attributes
 func (ap *AnsiPrinter) A(text string) *AnsiPrinter {
 	ap.content.WriteString(text)
@@ -493,4 +516,15 @@ func (ap *AnsiPrinter) threeBitColorCube(r int, g int, b int) int {
 	b = (b & 0xFF) * 5 / 255
 	color := 16 + 36*r + 6*g + b
 	return color
+}
+
+func (ap *AnsiPrinter) shadeOfGrayColor(intensity float64) int {
+	if intensity < 0 {
+		intensity = 0
+	}
+	if intensity > 1 {
+		intensity = 1
+	}
+	gray := 232 + int(23*intensity)
+	return gray
 }
