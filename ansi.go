@@ -4,6 +4,9 @@
 //
 // Provides fluent API similar to jansi library for Java (https://github.com/fusesource/jansi)
 //
+// ansi supports basic 7-colour, 256 colour and true colour modes. You can also use various attributes,
+// such as underline, strike-out, etc.
+//
 // errMsg := Ansi.A("Error: ").Fg(Red).S("File not found: %s", fileName).Reset().A("Try a different name").String()
 //
 // See https://github.com/uaraven/ansi for more details

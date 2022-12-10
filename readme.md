@@ -10,7 +10,7 @@ Get the library:
 
 You will need Go 1.14 or higher to use it.
 
-`ansi` supports basic 7-colour, 256 colour and true colour modes. You can also use various attributes.
+`ansi` supports basic 7-colour, 256 colour and true colour modes. You can also use various attributes, such as underline, strike-out, etc.
 
 Simple coloured output:
 
@@ -18,16 +18,25 @@ Simple coloured output:
 import . "github.com/uaraven/ansi"
 
 errorMsg := Ansi.A("Error: ").Fg(Red).S("File not found: %s", fileName).Reset().A("Try a different name").String()
-
 ```
+
+![img.png](images/img1.png)
 
 Underlined text:
 ```go
 import . "github.com/uaraven/ansi"
 
 errorMsg := Ansi.A("This is ").Attr(Underline).A("important").String()
-
 ```
+![img.png](images/img2.png)
+
+Custom ANSI attributes
+```go
+import . "github.com/uaraven/ansi"
+
+fmt.Printf(Ansi.A("This is ").Esc('m', ':', 4, 3).A("squiggly underlined").CR().String())
+```
+![img.png](images/img3.png)
 
 Disable colour if output is being redirected to file:
 
