@@ -1,4 +1,4 @@
-# ANSI - Go library for ANSI colours in terminal
+# ANSIe - Go library for ANSI colours in terminal
 
 This library API is inspired by [jansi library](https://github.com/fusesource/jansi).
 
@@ -6,16 +6,16 @@ This library API is inspired by [jansi library](https://github.com/fusesource/ja
 
 Get the library:
 
-    go get github.com/uaraven/ansi
+    go get github.com/uaraven/ansie
 
 You will need Go 1.14 or higher to use it.
 
-`ansi` supports basic 7-colour, 256 colour and true colour modes. You can also use various attributes, such as underline, strike-out, etc.
+`ansie` supports basic 7-colour, 256 colour and true colour modes. You can also use various attributes, such as underline, strike-out, etc.
 
 Simple coloured output:
 
 ```go
-import . "github.com/uaraven/ansi"
+import . "github.com/uaraven/ansie"
 
 errorMsg := Ansi.A("Error: ").Fg(Red).S("File not found: %s", fileName).Reset().A("Try a different name").String()
 ```
@@ -24,7 +24,7 @@ errorMsg := Ansi.A("Error: ").Fg(Red).S("File not found: %s", fileName).Reset().
 
 Underlined text:
 ```go
-import . "github.com/uaraven/ansi"
+import . "github.com/uaraven/ansie"
 
 errorMsg := Ansi.A("This is ").Attr(Underline).A("important").String()
 ```
@@ -32,7 +32,7 @@ errorMsg := Ansi.A("This is ").Attr(Underline).A("important").String()
 
 Custom ANSI attributes
 ```go
-import . "github.com/uaraven/ansi"
+import . "github.com/uaraven/ansie"
 
 fmt.Printf(Ansi.A("This is ").Esc('m', ':', 4, 3).A("squiggly underlined").CR().String())
 ```
@@ -41,7 +41,7 @@ fmt.Printf(Ansi.A("This is ").Esc('m', ':', 4, 3).A("squiggly underlined").CR().
 Disable colour if output is being redirected to file:
 
 ```go
-import . "github.com/uaraven/ansi"
+import . "github.com/uaraven/ansie"
 
 a := NewAnsiFor(os.stdout)
 
@@ -52,43 +52,49 @@ errorMsg := a.A("Error: ").Fg(Red).S("File not found: %s", fileName).Reset().A("
 
 ### Basic colours
 
-`ansi` supports basic terminal colours: Black, SysRed, SysGreen, SysYellow, SysBlue, SysMagenta, SysCyan and SysWhite.
+`ansie` supports basic terminal colours: SysBlack, SysRed, SysGreen, SysYellow, SysBlue, SysMagenta, SysCyan and SysWhite.
 These colours should be compatible with all terminals of the last 30 years.
 
-You can use `AnsiPrinter.Fg()` and `AnsiPrinter.Bg()` to set these colours.
+Use `AnsiBuffer.Fg()` and `AnsiBuffer.Bg()` to set these colours.
 
 ### 256 colours
 
 Extended colours, like `Black`, `Red`, `Yellow` or `LightGoldenrod3` will use 256-colour ANSI sequences and should also 
 work with any terminal of the last 30 years.
 
-You also use `AnsiPrinter.Fg()` and `AnsiPrinter.Bg()` to set these colours.
+Use `AnsiBuffer.Fg()` and `AnsiBuffer.Bg()` to set these colours.
 
-You can set 256 colours using RGB values. 
-The 24-bit RGB colours will be converted to 9-bit representation (3 bit per colour) suitable for 256-colour mode. 
-Use following functions to set 9-bit colours: `AnsiPrinter.FgRgb3(r,g,b int)`, `AnsiPrinter.FgRgb3I(rgb int)`, `AnsiPrinter.BgRgb3(r,g,b int)` and `AnsiPrinter.BgRgb3I(rgb int)`
+216 colours of the Xterm palette can be set using RGB values, where each colour component is limited to the values from
+0 to 5 (inclusive), forming a 6x6x6 colour cube.
+Use following functions to set 6-value component colours: `AnsiBuffer.FgRgb6(r,g,b uint)` and `AnsiBuffer.BgRgb6(r,g,b uint)`
 
-You can select shades of gray using intensity values for foreground and backround using 
-`AnsiPrinter.FgGray(intensity)` and `AnsiPrinter.BgGray(intensity)`. `intensity` is a floating point value in the range
-of 0 to 1. Any values beyond this range will be clipped.
+Shade of gray colours can be set for foreground and background using intensity values.
+
+One can use integer values from 0 to 23 which directly map to grayscale palette indices from 232 to 255.
+Use methods `AnsiBuffer.FgGray(uint)` and `AnsiBuffer.BgGray(uint)` to set grayscale colour by integer index.
+
+Alternatively one can use floating point intensity value in the range from 0 to 1, it will be automatically mapped
+to one of the closest 24 grayscale colours.
+
+Use methods  `AnsiBuffer.FgGrayF(float64)` and `AnsiBuffer.BgGrayF(float64)`.
 
 ### "True colour"
 
-`ansi` supports full 24-bit colours using RGB values, which should be supported by all modern terminals, but it isn't. 
+`ansie` supports full 24-bit colours using RGB values, which should be supported by all modern terminals, but it isn't. 
 Standard MacOS terminal, for example, doesn't support 24 bit color 
-Use following functions to set 24-bit colours: `AnsiPrinter.FgRgb(r,g,b int)`, `AnsiPrinter.FgRgbI(rgb int)`, `AnsiPrinter.BgRgb(r,g,b int)` and `AnsiPrinter.BgRgbI(rgb int)` 
+Use following functions to set 24-bit colours: `AnsiBuffer.FgRgb(r,g,b int)`, `AnsiBuffer.FgRgbI(rgb int)`, `AnsiBuffer.BgRgb(r,g,b int)` and `AnsiBuffer.BgRgbI(rgb int)` 
 
 ### Colour names
 
-`ansi` defines constants for the 256-colour palette with the names taken from [here](https://www.ditig.com/256-colors-cheat-sheet) and
+`ansie` defines constants for the 256-colour palette with the names taken from [here](https://www.ditig.com/256-colors-cheat-sheet) and
 matching Xterm names.
 
 Note that some of the Xterm colour names are duplicated with the different palette index value. In the case of duplicates
-one random name was selected and added to `ansi` constants.
+one random name was selected and added to `ansie` constants.
 
 
 ## License
 
-`ansi` is distributed under the terms of MIT license.
+`ansie` is distributed under the terms of MIT license.
 
 Copy of the license text is available in the [license.txt](license.txt) file.

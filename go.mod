@@ -1,4 +1,4 @@
-module github.com/uaraven/ansi
+module github.com/uaraven/ansie
 
 go 1.14
 

@@ -1,6 +1,6 @@
 // Package ansi
 //
-// Adds support for ansi colors in the terminal.
+// Adds support for ansi colours in the terminal.
 //
 // Provides fluent API similar to jansi library for Java (https://github.com/fusesource/jansi)
 //
@@ -14,7 +14,7 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: (c) 2022 Oleksiy Voronin <ovoronin@gmail.com>
 
-package ansi
+package ansie
 
 import (
 	"fmt"
@@ -55,22 +55,21 @@ const (
 
 //goland:noinspection ALL
 const (
+	// SysBlack is a colour from standard 7-colour terminal palette
 	Black Colour = 0
-	// SysBlack is a color from standard 7-color terminal palette
-	SysBlack Colour = 0
-	// SysRed is a color from standard 7-color terminal palette
+	// SysRed is a colour from standard 7-colour terminal palette
 	SysRed Colour = -1
-	// SysGreen is a color from standard 7-color terminal palette
+	// SysGreen is a colour from standard 7-colour terminal palette
 	SysGreen Colour = -2
-	// SysYellow is a color from standard 7-color terminal palette
+	// SysYellow is a colour from standard 7-colour terminal palette
 	SysYellow Colour = -3
-	// SysBlue is a color from standard 7-color terminal palette
+	// SysBlue is a colour from standard 7-colour terminal palette
 	SysBlue Colour = -4
-	// SysMagenta is a color from standard 7-color terminal palette
+	// SysMagenta is a colour from standard 7-colour terminal palette
 	SysMagenta Colour = -5
-	// SysCyan is a color from standard 7-color terminal palette
+	// SysCyan is a colour from standard 7-colour terminal palette
 	SysCyan Colour = -6
-	// SysWhite is a Red color from standard 7-color terminal palette
+	// SysWhite is a Red colour from standard 7-colour terminal palette
 	SysWhite Colour = -7
 
 	Maroon            Colour = 1
@@ -275,207 +274,204 @@ const (
 	Grey93            Colour = 255
 )
 
-type AnsiPrinter struct {
+type AnsiBuffer struct {
 	enabled bool
 	content strings.Builder
 }
 
-// NewAnsi creates a new AnsiPrinter. It doesn't assume anything about the device that the output will be
+// NewAnsi creates a new AnsiBuffer. It doesn't assume anything about the device that the output will be
 // directed to.
-func NewAnsi() *AnsiPrinter {
-	return &AnsiPrinter{enabled: true}
+func NewAnsi() *AnsiBuffer {
+	return &AnsiBuffer{enabled: true}
 }
 
-// Ansi is a default instance of AnsiPrinter
+// Ansi is a default instance of AnsiBuffer
 var Ansi = NewAnsi()
 
-// NewAnsiFor creates a new AnsiPrinter for a given device. It will not automatically print to this device,
-// but it will disable ANSI colors if the device doesn't seem to support them, like when redirecting
+// NewAnsiFor creates a new AnsiBuffer for a given device. It will not automatically print to this device,
+// but it will disable ANSI colours if the device doesn't seem to support them, like when redirecting
 // standard output into a file or piping it to another program
-func NewAnsiFor(f *os.File) *AnsiPrinter {
+func NewAnsiFor(f *os.File) *AnsiBuffer {
 	o, err := f.Stat()
 	if err != nil {
 		panic(err)
 	}
 	enabled := (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
-	return &AnsiPrinter{enabled: enabled}
+	return &AnsiBuffer{enabled: enabled}
 }
 
-// Clear resets the internal buffer, after calling it the AnsiPrinter is in a clean state,
+// Clear resets the internal buffer, after calling it the AnsiBuffer is in a clean state,
 // as if just created
-func (ap *AnsiPrinter) Clear() *AnsiPrinter {
+func (ap *AnsiBuffer) Clear() *AnsiBuffer {
 	ap.content = strings.Builder{}
 	return ap
 }
 
 // GetBuffer retrieves internal buffer as a string without clearing it
-func (ap *AnsiPrinter) GetBuffer() string {
+func (ap *AnsiBuffer) GetBuffer() string {
 	return ap.content.String()
 }
 
-// IsEnabled returns true if color output is enabled
-func (ap *AnsiPrinter) IsEnabled() bool {
+// IsEnabled returns true if colour output is enabled
+func (ap *AnsiBuffer) IsEnabled() bool {
 	return ap.enabled
 }
 
-// SetEnabled enables or disables the color output. This does not affect the string already in AnsiPrinter's buffer
-func (ap *AnsiPrinter) SetEnabled(value bool) {
+// SetEnabled enables or disables the colour output. This does not affect the string already in AnsiBuffer's buffer
+func (ap *AnsiBuffer) SetEnabled(value bool) {
 	ap.enabled = value
 }
 
 // String converts the internal buffer to a string. The buffer is cleared after the call
-func (ap *AnsiPrinter) String() string {
+func (ap *AnsiBuffer) String() string {
 	s := ap.content.String()
 	ap.Clear()
 	return s
 }
 
-// Reset resets all the colors and attributes to defaults
-func (ap *AnsiPrinter) Reset() *AnsiPrinter {
+// Reset resets all the colours and attributes to defaults
+func (ap *AnsiBuffer) Reset() *AnsiBuffer {
 	ap.writeAnsiSeq(0)
 	return ap
 }
 
-// Fg sets foreground color. When using SysColor constants, like SysRed or SysYellow, the most basic and most compatible
-// ANSI sequence will be used. Using any of other color constants or integer values will use 256-color ANSI sequence
-func (ap *AnsiPrinter) Fg(color Colour) *AnsiPrinter {
-	if color < 0 {
-		ap.writeAnsiSeq(30 + (-color))
+// Fg sets foreground colour. When using SysColour constants, like SysRed or SysYellow, the most basic and most compatible
+// ANSI sequence will be used. Using any of other colour constants or integer values will use 256-colour ANSI sequence
+func (ap *AnsiBuffer) Fg(colour Colour) *AnsiBuffer {
+	if colour < 0 {
+		ap.writeAnsiSeq(30 + (-colour))
 	} else {
-		ap.writeAnsiSeq(38, 5, color)
+		ap.writeAnsiSeq(38, 5, colour)
 	}
 	return ap
 }
 
-// Bg sets background color to one of standard 8 colors
-func (ap *AnsiPrinter) Bg(color Colour) *AnsiPrinter {
-	if color < 0 {
-		ap.writeAnsiSeq(40 + (-color))
+// Bg sets background colour to one of standard 8 colours
+func (ap *AnsiBuffer) Bg(colour Colour) *AnsiBuffer {
+	if colour < 0 {
+		ap.writeAnsiSeq(40 + (-colour))
 	} else {
-		ap.writeAnsiSeq(48, 5, color)
+		ap.writeAnsiSeq(48, 5, colour)
 	}
 	return ap
 }
 
-// FgHi sets foreground color to the high intensity version of one of standard 8 colors
+// FgHi sets foreground colour to the high intensity version of one of standard 8 colours
 //
-// If used with one of 256 color codes, it will just set the color, without modifying the intensity
-func (ap *AnsiPrinter) FgHi(color Colour) *AnsiPrinter {
-	if color < 0 {
-		color = -color
-		ap.writeAnsiSeq(90 + color)
+// If used with one of 256 colour codes, it will just set the colour, without modifying the intensity
+func (ap *AnsiBuffer) FgHi(colour Colour) *AnsiBuffer {
+	if colour < 0 {
+		colour = -colour
+		ap.writeAnsiSeq(90 + colour)
 		return ap
 	} else {
-		return ap.Fg(color)
+		return ap.Fg(colour)
 	}
 }
 
-func (ap *AnsiPrinter) Attr(attr Attribute) *AnsiPrinter {
+func (ap *AnsiBuffer) Attr(attr Attribute) *AnsiBuffer {
 	ap.writeAnsiSeq(attr)
 	return ap
 }
 
-// BgHi sets background color to the high intensity version of one of standard 8 colors
+// BgHi sets background colour to the high intensity version of one of standard 8 colours
 //
-// If used with one of 256 color codes, it will just set the color, without modifying the intensity
-func (ap *AnsiPrinter) BgHi(color Colour) *AnsiPrinter {
-	if color < 0 {
-		color = -color
-		ap.writeAnsiSeq(100 + color)
+// If used with one of 256 colour codes, it will just set the colour, without modifying the intensity
+func (ap *AnsiBuffer) BgHi(colour Colour) *AnsiBuffer {
+	if colour < 0 {
+		colour = -colour
+		ap.writeAnsiSeq(100 + colour)
 		return ap
 	} else {
-		return ap.Bg(color)
+		return ap.Bg(colour)
 	}
 }
 
-// FgRgb sets foreground color using "true color" RGB color
-func (ap *AnsiPrinter) FgRgb(r, g, b int) *AnsiPrinter {
-	ap.writeAnsiSeq(38, 2, r, g, b)
+// FgRgb sets foreground colour using "true colour" RGB colour
+func (ap *AnsiBuffer) FgRgb(r, g, b uint) *AnsiBuffer {
+	ap.writeAnsiSeq(38, 2, int(clip(r, 255)), int(clip(g, 255)), int(clip(b, 255)))
 	return ap
 }
 
-// FgRgbI sets foreground color using "true color" RGB color represented as a single integer
-func (ap *AnsiPrinter) FgRgbI(i int) *AnsiPrinter {
+// FgRgbI sets foreground colour using "true colour" RGB colour represented as a single integer
+func (ap *AnsiBuffer) FgRgbI(i uint) *AnsiBuffer {
 	r := (i >> 16) & 0xFF
 	g := (i >> 8) & 0xFF
 	b := i & 0xFF
-	ap.writeAnsiSeq(38, 2, r, g, b)
+	ap.writeAnsiSeq(38, 2, int(clip(r, 255)), int(clip(g, 255)), int(clip(b, 255)))
 	return ap
 }
 
-// BgRgb sets foreground color using "true color" RGB color
-func (ap *AnsiPrinter) BgRgb(r, g, b int) *AnsiPrinter {
-	ap.writeAnsiSeq(48, 2, r, g, b)
+// BgRgb sets foreground colour using "true colour" RGB colour
+func (ap *AnsiBuffer) BgRgb(r, g, b uint) *AnsiBuffer {
+	ap.writeAnsiSeq(48, 2, int(clip(r, 255)), int(clip(g, 255)), int(clip(b, 255)))
 	return ap
 }
 
-// BgRgbI sets background color using "true color" RGB color represented as a single integer
-func (ap *AnsiPrinter) BgRgbI(i int) *AnsiPrinter {
+// BgRgbI sets background colour using "true colour" RGB colour represented as a single integer
+func (ap *AnsiBuffer) BgRgbI(i uint) *AnsiBuffer {
 	r := (i >> 16) & 0xFF
 	g := (i >> 8) & 0xFF
 	b := i & 0xFF
-	ap.writeAnsiSeq(48, 2, r, g, b)
+	ap.writeAnsiSeq(48, 2, int(clip(r, 255)), int(clip(g, 255)), int(clip(b, 255)))
 	return ap
 }
 
-// FgRgb3 sets foreground RGB color converted to 9-bit color (3;3;3) as supported by 256-color ANSI sequence
-func (ap *AnsiPrinter) FgRgb3(r, g, b int) *AnsiPrinter {
-	color := ap.threeBitColorCube(r, g, b)
-	return ap.Fg(color)
+// FgRgb6 sets foreground RGB colour as supported by 256-colour ANSI sequence
+// In this mode each colour component is represented by a value from 0 to 5.
+// Values beyond range of [0..5] are clipped
+// R, G an B values are combined to get one of 216 colours supported by terminal
+func (ap *AnsiBuffer) FgRgb6(r, g, b uint) *AnsiBuffer {
+	colour := ap.sixColourCube(r, g, b)
+	return ap.Fg(colour)
 }
 
-// BgRgb3 sets background RGB color converted to 9-bit color (3;3;3) as supported by 256-color ANSI sequence
-func (ap *AnsiPrinter) BgRgb3(r, g, b int) *AnsiPrinter {
-	color := ap.threeBitColorCube(r, g, b)
-	return ap.Bg(color)
+// BgRgb6 sets background RGB colour converted to 9-bit colour (3;3;3) as supported by 256-colour ANSI sequence
+func (ap *AnsiBuffer) BgRgb6(r, g, b uint) *AnsiBuffer {
+	colour := ap.sixColourCube(r, g, b)
+	return ap.Bg(colour)
 }
 
-// FgRgb3I sets foreground RGB color, represented as integer, converting it to 9-bit color (3;3;3) as supported by 256-color ANSI sequence
-func (ap *AnsiPrinter) FgRgb3I(rgb int) *AnsiPrinter {
-	r := (rgb >> 16) & 0xFF
-	g := (rgb >> 8) & 0xFF
-	b := rgb & 0xFF
-	color := ap.threeBitColorCube(r, g, b)
-	return ap.Fg(color)
+// FgGray sets foreground colour that is the shade of gray. intensity is a value in a range [0..23]. It is converted to
+// one of standard 24 gray shades in the 256-colour palette
+func (ap *AnsiBuffer) FgGray(intensity uint) *AnsiBuffer {
+	return ap.Fg(Colour(232 + clip(intensity, 23)))
 }
 
-// BgRgb3I sets background RGB color, represented as integer, converting it to 9-bit color (3;3;3) as supported by 256-color ANSI sequence
-func (ap *AnsiPrinter) BgRgb3I(rgb int) *AnsiPrinter {
-	r := (rgb >> 16) & 0xFF
-	g := (rgb >> 8) & 0xFF
-	b := rgb & 0xFF
-	color := ap.threeBitColorCube(r, g, b)
-	return ap.Bg(color)
+// BgGray sets background colour that is the shade of gray. intensity is a value in a range [0..24]. It is converted to
+// one of standard 24 gray shades in the 256-colour palette
+func (ap *AnsiBuffer) BgGray(intensity uint) *AnsiBuffer {
+	return ap.Bg(Colour(232 + clip(intensity, 23)))
 }
 
-// FgGray sets foreground color that is the shade of gray. intensity is a value in a range [0..1]. It is converted to
-// one of standard 24 gray shades in the 256-color palette
-func (ap *AnsiPrinter) FgGray(intensity float64) *AnsiPrinter {
-	gray := ap.shadeOfGrayColor(intensity)
+// FgGrayF sets foreground colour that is the shade of gray. intensity is a floating point value in a range [0..1].
+// It is converted to one of standard 24 gray shades in the 256-colour palette
+func (ap *AnsiBuffer) FgGrayF(intensity float64) *AnsiBuffer {
+	gray := ap.shadeOfGrayColour(intensity)
 	return ap.Fg(gray)
 }
 
-// BgGray sets background color that is the shade of gray. intensity is a value in a range [0..1]. It is converted to
-// one of standard 24 gray shades in the 256-color palette
-func (ap *AnsiPrinter) BgGray(intensity float64) *AnsiPrinter {
-	gray := ap.shadeOfGrayColor(intensity)
+// BgGrayF sets background colour that is the shade of gray. intensity is a floating point value in a range [0..1].
+// It is converted to one of standard 24 gray shades in the 256-colour palette
+func (ap *AnsiBuffer) BgGrayF(intensity float64) *AnsiBuffer {
+	gray := ap.shadeOfGrayColour(intensity)
 	return ap.Bg(gray)
 }
 
-// A adds text to the AnsiPrinter's buffer. The text will be output with the current colors and attributes
-func (ap *AnsiPrinter) A(text string) *AnsiPrinter {
+// A adds text to the AnsiBuffer's buffer. The text will be output with the current colours and attributes
+func (ap *AnsiBuffer) A(text string) *AnsiBuffer {
 	ap.content.WriteString(text)
 	return ap
 }
 
-// S adds formatted (similar to fmt.Sprintf) text to the AnsiPrinter's buffer. The text will be output with the current colors and attributes
-func (ap *AnsiPrinter) S(format string, params ...interface{}) *AnsiPrinter {
+// S adds formatted (similar to fmt.Sprintf) text to the AnsiBuffer's buffer. The text will be output with the current colours and attributes
+func (ap *AnsiBuffer) S(format string, params ...interface{}) *AnsiBuffer {
 	ap.content.WriteString(fmt.Sprintf(format, params...))
 	return ap
 }
 
-// CR adds carriage return character (ASCII 13) to the AnsiPrinter's buffer
-func (ap *AnsiPrinter) CR() *AnsiPrinter {
+// CR adds carriage return character (ASCII 13) to the AnsiBuffer's buffer
+func (ap *AnsiBuffer) CR() *AnsiBuffer {
 	ap.content.WriteRune('\n')
 	return ap
 }
@@ -486,19 +482,19 @@ func (ap *AnsiPrinter) CR() *AnsiPrinter {
 // ESC[codes sep codes sep codes sep command
 //
 // i.e. Esc('m', ':', 4, 3) will create sequence 'ESC[4:3m' which will create curly underline in iTerm2
-func (ap *AnsiPrinter) Esc(command rune, sep rune, codes ...int) *AnsiPrinter {
+func (ap *AnsiBuffer) Esc(command rune, sep rune, codes ...int) *AnsiBuffer {
 	ap.writeAnsiCommand(command, sep, codes...)
 	return ap
 }
 
 // EscM allows to add custom SGR sequences to the output
-// EscM(38, 2, 0, 0, 255) will add sequence 'ESC[38;2;0;0;255m' to enable bright blue RGB color
-func (ap *AnsiPrinter) EscM(codes ...int) *AnsiPrinter {
+// EscM(38, 2, 0, 0, 255) will add sequence 'ESC[38;2;0;0;255m' to enable bright blue RGB colour
+func (ap *AnsiBuffer) EscM(codes ...int) *AnsiBuffer {
 	ap.writeAnsiSeq(codes...)
 	return ap
 }
 
-func (ap *AnsiPrinter) writeAnsiCommand(command rune, sep rune, codes ...int) {
+func (ap *AnsiBuffer) writeAnsiCommand(command rune, sep rune, codes ...int) {
 	if ap.enabled {
 		ap.content.WriteString(esc)
 		for _, code := range codes {
@@ -509,19 +505,24 @@ func (ap *AnsiPrinter) writeAnsiCommand(command rune, sep rune, codes ...int) {
 	}
 }
 
-func (ap *AnsiPrinter) writeAnsiSeq(codes ...int) {
+func (ap *AnsiBuffer) writeAnsiSeq(codes ...int) {
 	ap.writeAnsiCommand('m', ';', codes...)
 }
 
-func (ap *AnsiPrinter) threeBitColorCube(r int, g int, b int) int {
-	r = (r & 0xFF) * 5 / 255
-	g = (g & 0xFF) * 5 / 255
-	b = (b & 0xFF) * 5 / 255
-	color := 16 + 36*r + 6*g + b
-	return color
+func (ap *AnsiBuffer) sixColourCube(r uint, g uint, b uint) Colour {
+	colour := 16 + 36*clip(r, 5) + 6*clip(g, 5) + clip(b, 5)
+	return Colour(colour)
 }
 
-func (ap *AnsiPrinter) shadeOfGrayColor(intensity float64) int {
+func clip(c uint, high uint) uint {
+	if c > high {
+		return high
+	} else {
+		return c
+	}
+}
+
+func (ap *AnsiBuffer) shadeOfGrayColour(intensity float64) int {
 	if intensity < 0 {
 		intensity = 0
 	}
