@@ -74,9 +74,9 @@ of 0 to 1. Any values beyond this range will be clipped.
 
 ### "True colour"
 
-`ansi` supports full 24-bit colours using RGB values. The 24-bit RGB colours will be converted to 9-bit representation
-(3 bit per colour) suitable for 256-colour mode.
-Use following functions to set 9-bit colours: `AnsiPrinter.FgRgb(r,g,b int)`, `AnsiPrinter.FgRgbI(rgb int)`, `AnsiPrinter.BgRgb(r,g,b int)` and `AnsiPrinter.BgRgbI(rgb int)` 
+`ansi` supports full 24-bit colours using RGB values, which should be supported by all modern terminals, but it isn't. 
+Standard MacOS terminal, for example, doesn't support 24 bit color 
+Use following functions to set 24-bit colours: `AnsiPrinter.FgRgb(r,g,b int)`, `AnsiPrinter.FgRgbI(rgb int)`, `AnsiPrinter.BgRgb(r,g,b int)` and `AnsiPrinter.BgRgbI(rgb int)` 
 
 ### Colour names
 
