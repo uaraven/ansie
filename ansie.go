@@ -55,38 +55,31 @@ const (
 
 //goland:noinspection ALL
 const (
-	// SysBlack is a colour from standard 7-colour terminal palette
-	Black Colour = 0
-	// SysRed is a colour from standard 7-colour terminal palette
-	SysRed Colour = -1
-	// SysGreen is a colour from standard 7-colour terminal palette
-	SysGreen Colour = -2
-	// SysYellow is a colour from standard 7-colour terminal palette
-	SysYellow Colour = -3
-	// SysBlue is a colour from standard 7-colour terminal palette
-	SysBlue Colour = -4
-	// SysMagenta is a colour from standard 7-colour terminal palette
-	SysMagenta Colour = -5
-	// SysCyan is a colour from standard 7-colour terminal palette
-	SysCyan Colour = -6
-	// SysWhite is a Red colour from standard 7-colour terminal palette
-	SysWhite Colour = -7
-
-	Maroon            Colour = 1
+	Black             Colour = 0
+	Red               Colour = 1
 	Green             Colour = 2
+	Yellow            Colour = 3
+	Blue              Colour = 4
+	Magenta           Colour = 5
+	Cyan              Colour = 6
+	White             Colour = 7
+	Maroon            Colour = 1
 	Olive             Colour = 3
 	Navy              Colour = 4
 	Purple            Colour = 5
 	Teal              Colour = 6
 	Silver            Colour = 7
 	Grey              Colour = 8
-	Red               Colour = 9
+	BrightRed         Colour = 9
+	BrightGreen       Colour = 9
 	Lime              Colour = 10
-	Yellow            Colour = 11
-	Blue              Colour = 12
+	BrightYellow      Colour = 11
+	BrightBlue        Colour = 12
 	Fuchsia           Colour = 13
+	BrightMagenta     Colour = 13
 	Aqua              Colour = 14
-	White             Colour = 15
+	BrightCyan        Colour = 14
+	BrightWhite       Colour = 15
 	Grey0             Colour = 16
 	NavyBlue          Colour = 17
 	DarkBlue          Colour = 18
@@ -286,7 +279,7 @@ func NewAnsi() *AnsiBuffer {
 }
 
 // Ansi is a default instance of AnsiBuffer
-var Ansi = NewAnsi()
+var Ansi = NewAnsiFor(os.Stdout)
 
 // NewAnsiFor creates a new AnsiBuffer for a given device. It will not automatically print to this device,
 // but it will disable ANSI colours if the device doesn't seem to support them, like when redirecting
@@ -338,8 +331,8 @@ func (ap *AnsiBuffer) Reset() *AnsiBuffer {
 // Fg sets foreground colour. When using SysColour constants, like SysRed or SysYellow, the most basic and most compatible
 // ANSI sequence will be used. Using any of other colour constants or integer values will use 256-colour ANSI sequence
 func (ap *AnsiBuffer) Fg(colour Colour) *AnsiBuffer {
-	if colour < 0 {
-		ap.writeAnsiSeq(30 + (-colour))
+	if colour < 8 {
+		ap.writeAnsiSeq(30 + colour)
 	} else {
 		ap.writeAnsiSeq(38, 5, colour)
 	}
@@ -348,8 +341,8 @@ func (ap *AnsiBuffer) Fg(colour Colour) *AnsiBuffer {
 
 // Bg sets background colour to one of standard 8 colours
 func (ap *AnsiBuffer) Bg(colour Colour) *AnsiBuffer {
-	if colour < 0 {
-		ap.writeAnsiSeq(40 + (-colour))
+	if colour < 8 {
+		ap.writeAnsiSeq(40 + colour)
 	} else {
 		ap.writeAnsiSeq(48, 5, colour)
 	}
@@ -360,8 +353,7 @@ func (ap *AnsiBuffer) Bg(colour Colour) *AnsiBuffer {
 //
 // If used with one of 256 colour codes, it will just set the colour, without modifying the intensity
 func (ap *AnsiBuffer) FgHi(colour Colour) *AnsiBuffer {
-	if colour < 0 {
-		colour = -colour
+	if colour < 7 {
 		ap.writeAnsiSeq(90 + colour)
 		return ap
 	} else {
@@ -369,6 +361,7 @@ func (ap *AnsiBuffer) FgHi(colour Colour) *AnsiBuffer {
 	}
 }
 
+// Attr sets font attribute
 func (ap *AnsiBuffer) Attr(attr Attribute) *AnsiBuffer {
 	ap.writeAnsiSeq(attr)
 	return ap
@@ -378,8 +371,7 @@ func (ap *AnsiBuffer) Attr(attr Attribute) *AnsiBuffer {
 //
 // If used with one of 256 colour codes, it will just set the colour, without modifying the intensity
 func (ap *AnsiBuffer) BgHi(colour Colour) *AnsiBuffer {
-	if colour < 0 {
-		colour = -colour
+	if colour < 7 {
 		ap.writeAnsiSeq(100 + colour)
 		return ap
 	} else {

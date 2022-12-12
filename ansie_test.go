@@ -24,7 +24,7 @@ func TestAnsiBuffer_Clear(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := NewAnsi()
-	s := a.FgHi(SysBlue).A("some text")
+	s := a.FgHi(Blue).A("some text")
 	g.Expect(s.GetBuffer()).To(Equal("\033[94;msome text"))
 	s.Clear()
 	g.Expect(s.GetBuffer()).To(Equal(""))
@@ -34,9 +34,9 @@ func TestAnsiBuffer_FgHi(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := NewAnsi()
-	s := a.FgHi(SysBlue).A("some text").String()
+	s := a.FgHi(Blue).A("some text").String()
 	g.Expect(s).To(Equal("\033[94;msome text"))
-	s = a.FgHi(Yellow).A("text").String()
+	s = a.FgHi(BrightYellow).A("text").String()
 	g.Expect(s).To(Equal("\033[38;5;11;mtext"))
 }
 
@@ -44,9 +44,9 @@ func TestAnsiBuffer_BgHi(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := NewAnsi()
-	s := a.BgHi(SysBlue).A("some text").String()
+	s := a.BgHi(Blue).A("some text").String()
 	g.Expect(s).To(Equal("\033[104;msome text"))
-	s = a.BgHi(Yellow).A("text").String()
+	s = a.BgHi(BrightYellow).A("text").String()
 	g.Expect(s).To(Equal("\033[48;5;11;mtext"))
 }
 
@@ -54,7 +54,7 @@ func TestAnsiBuffer_ImplicitClear(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := NewAnsi()
-	s := a.FgHi(SysBlue).A("some text")
+	s := a.FgHi(Blue).A("some text")
 	g.Expect(s.GetBuffer()).To(Equal("\033[94;msome text"))
 	g.Expect(s.String()).To(Equal("\033[94;msome text"))
 	g.Expect(s.GetBuffer()).To(Equal(""))
@@ -64,7 +64,7 @@ func TestAnsiBuffer_Fg(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := NewAnsi()
-	s := a.Fg(SysRed).A("text").Reset().String()
+	s := a.Fg(Red).A("text").Reset().String()
 
 	g.Expect(s).To(Equal("\033[31;mtext\033[0;m"))
 }
@@ -91,7 +91,7 @@ func TestAnsiBuffer_Bg(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := NewAnsi()
-	s := a.Bg(SysRed).A("text").Reset().String()
+	s := a.Bg(Red).A("text").Reset().String()
 
 	g.Expect(s).To(Equal("\033[41;mtext\033[0;m"))
 }
@@ -181,11 +181,11 @@ func TestAnsiBuffer_Disable(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := NewAnsi()
-	a.Fg(SysRed).A("red")
+	a.Fg(Red).A("red")
 	a.SetEnabled(false)
-	a.Fg(SysWhite).A("white")
+	a.Fg(White).A("white")
 	a.SetEnabled(true)
-	s := a.Fg(SysBlue).A("blue").String()
+	s := a.Fg(Blue).A("blue").String()
 
 	g.Expect(s).To(Equal("\033[31;mredwhite\033[34;mblue"))
 }
@@ -204,24 +204,24 @@ func TestAnsiBuffer_IsEnabled(t *testing.T) {
 func TestAnsiBuffer_FgGray(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	s := Ansi.FgGrayF(0.5).A("text").String()
+	a := NewAnsi()
 
+	s := a.FgGrayF(0.5).A("text").String()
 	g.Expect(s).To(Equal("\033[38;5;243;mtext"))
 
-	s = Ansi.FgGray(12).A("text").String()
-
+	s = a.FgGray(12).A("text").String()
 	g.Expect(s).To(Equal("\033[38;5;244;mtext"))
 }
 
 func TestAnsiBuffer_BgGray(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	s := Ansi.BgGrayF(0.5).A("text").String()
+	a := NewAnsi()
 
+	s := a.BgGrayF(0.5).A("text").String()
 	g.Expect(s).To(Equal("\033[48;5;243;mtext"))
 
-	s = Ansi.BgGray(12).A("text").String()
-
+	s = a.BgGray(12).A("text").String()
 	g.Expect(s).To(Equal("\033[48;5;244;mtext"))
 }
 
