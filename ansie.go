@@ -414,13 +414,13 @@ func (ap *AnsiBuffer) BgRgbI(i uint) *AnsiBuffer {
 // Values beyond range of [0..5] are clipped
 // R, G an B values are combined to get one of 216 colours supported by terminal
 func (ap *AnsiBuffer) FgRgb6(r, g, b uint) *AnsiBuffer {
-	colour := ap.RgbTo216Colours(r, g, b)
+	colour := RgbTo216Colours(r, g, b)
 	return ap.Fg(colour)
 }
 
 // BgRgb6 sets background RGB colour converted to 9-bit colour (3;3;3) as supported by 256-colour ANSI sequence
 func (ap *AnsiBuffer) BgRgb6(r, g, b uint) *AnsiBuffer {
-	colour := ap.RgbTo216Colours(r, g, b)
+	colour := RgbTo216Colours(r, g, b)
 	return ap.Bg(colour)
 }
 
@@ -488,7 +488,7 @@ func (ap *AnsiBuffer) EscM(codes ...int) *AnsiBuffer {
 
 // RgbTo216Colours converts a colour represented as R,G,B values of 0 to 5 to one of 216 colours
 // in 256-colour palette
-func (ap *AnsiBuffer) RgbTo216Colours(r uint, g uint, b uint) Colour {
+func RgbTo216Colours(r uint, g uint, b uint) Colour {
 	colour := 16 + 36*clip(r, 5) + 6*clip(g, 5) + clip(b, 5)
 	return Colour(colour)
 }
