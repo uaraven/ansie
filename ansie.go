@@ -53,220 +53,6 @@ const (
 	NoCrossOut
 )
 
-//goland:noinspection ALL
-const (
-	Black             Colour = 0
-	Red               Colour = 1
-	Green             Colour = 2
-	Yellow            Colour = 3
-	Blue              Colour = 4
-	Magenta           Colour = 5
-	Cyan              Colour = 6
-	White             Colour = 7
-	Maroon            Colour = 1
-	Olive             Colour = 3
-	Navy              Colour = 4
-	Purple            Colour = 5
-	Teal              Colour = 6
-	Silver            Colour = 7
-	Grey              Colour = 8
-	BrightRed         Colour = 9
-	BrightGreen       Colour = 9
-	Lime              Colour = 10
-	BrightYellow      Colour = 11
-	BrightBlue        Colour = 12
-	Fuchsia           Colour = 13
-	BrightMagenta     Colour = 13
-	Aqua              Colour = 14
-	BrightCyan        Colour = 14
-	BrightWhite       Colour = 15
-	Grey0             Colour = 16
-	NavyBlue          Colour = 17
-	DarkBlue          Colour = 18
-	Blue3             Colour = 20
-	Blue1             Colour = 21
-	DarkGreen         Colour = 22
-	DeepSkyBlue4      Colour = 25
-	DodgerBlue3       Colour = 26
-	DodgerBlue2       Colour = 27
-	Green4            Colour = 28
-	SpringGreen4      Colour = 29
-	Turquoise4        Colour = 30
-	DeepSkyBlue3      Colour = 32
-	DodgerBlue1       Colour = 33
-	Green3            Colour = 34
-	SpringGreen3      Colour = 35
-	DarkCyan          Colour = 36
-	LightSeaGreen     Colour = 37
-	DeepSkyBlue2      Colour = 38
-	DeepSkyBlue1      Colour = 39
-	SpringGreen2      Colour = 42
-	Cyan3             Colour = 43
-	DarkTurquoise     Colour = 44
-	Turquoise2        Colour = 45
-	Green1            Colour = 46
-	SpringGreen1      Colour = 48
-	MediumSpringGreen Colour = 49
-	Cyan2             Colour = 50
-	Cyan1             Colour = 51
-	Purple4           Colour = 55
-	Purple3           Colour = 56
-	BlueViolet        Colour = 57
-	Grey37            Colour = 59
-	MediumPurple4     Colour = 60
-	SlateBlue3        Colour = 62
-	RoyalBlue1        Colour = 63
-	Chartreuse4       Colour = 64
-	PaleTurquoise4    Colour = 66
-	SteelBlue         Colour = 67
-	SteelBlue3        Colour = 68
-	CornflowerBlue    Colour = 69
-	DarkSeaGreen4     Colour = 71
-	CadetBlue         Colour = 72
-	SkyBlue3          Colour = 74
-	Chartreuse3       Colour = 76
-	PaleGreen3        Colour = 77
-	SeaGreen3         Colour = 78
-	Aquamarine3       Colour = 79
-	MediumTurquoise   Colour = 80
-	SteelBlue1        Colour = 81
-	SeaGreen2         Colour = 83
-	SeaGreen1         Colour = 85
-	DarkSlateGray2    Colour = 87
-	DarkRed           Colour = 88
-	DarkMagenta       Colour = 91
-	Orange4           Colour = 94
-	LightPink4        Colour = 95
-	Plum4             Colour = 96
-	MediumPurple3     Colour = 98
-	SlateBlue1        Colour = 99
-	Wheat4            Colour = 101
-	Grey53            Colour = 102
-	LightSlateGrey    Colour = 103
-	MediumPurple      Colour = 104
-	LightSlateBlue    Colour = 105
-	Yellow4           Colour = 106
-	DarkSeaGreen      Colour = 108
-	LightSkyBlue3     Colour = 110
-	SkyBlue2          Colour = 111
-	Chartreuse2       Colour = 112
-	DarkSlateGray3    Colour = 116
-	SkyBlue1          Colour = 117
-	Chartreuse1       Colour = 118
-	LightGreen        Colour = 120
-	Aquamarine1       Colour = 122
-	DarkSlateGray1    Colour = 123
-	DeepPink4         Colour = 125
-	MediumVioletRed   Colour = 126
-	DarkViolet        Colour = 128
-	MediumOrchid3     Colour = 133
-	MediumOrchid      Colour = 134
-	DarkGoldenrod     Colour = 136
-	RosyBrown         Colour = 138
-	Grey63            Colour = 139
-	MediumPurple2     Colour = 140
-	MediumPurple1     Colour = 141
-	DarkKhaki         Colour = 143
-	NavajoWhite3      Colour = 144
-	Grey69            Colour = 145
-	LightSteelBlue3   Colour = 146
-	LightSteelBlue    Colour = 147
-	DarkOliveGreen3   Colour = 149
-	DarkSeaGreen3     Colour = 150
-	LightCyan3        Colour = 152
-	LightSkyBlue1     Colour = 153
-	GreenYellow       Colour = 154
-	DarkOliveGreen2   Colour = 155
-	PaleGreen1        Colour = 156
-	DarkSeaGreen1     Colour = 158
-	PaleTurquoise1    Colour = 159
-	Red3              Colour = 160
-	DeepPink3         Colour = 162
-	Magenta3          Colour = 164
-	DarkOrange3       Colour = 166
-	IndianRed         Colour = 167
-	HotPink3          Colour = 168
-	HotPink2          Colour = 169
-	Orchid            Colour = 170
-	Orange3           Colour = 172
-	LightSalmon3      Colour = 173
-	LightPink3        Colour = 174
-	Pink3             Colour = 175
-	Plum3             Colour = 176
-	Violet            Colour = 177
-	Gold3             Colour = 178
-	LightGoldenrod3   Colour = 179
-	Tan               Colour = 180
-	MistyRose3        Colour = 181
-	Thistle3          Colour = 182
-	Plum2             Colour = 183
-	Yellow3           Colour = 184
-	Khaki3            Colour = 185
-	LightYellow3      Colour = 187
-	Grey84            Colour = 188
-	LightSteelBlue1   Colour = 189
-	Yellow2           Colour = 190
-	DarkOliveGreen1   Colour = 192
-	Honeydew2         Colour = 194
-	LightCyan1        Colour = 195
-	Red1              Colour = 196
-	DeepPink2         Colour = 197
-	DeepPink1         Colour = 199
-	Magenta2          Colour = 200
-	Magenta1          Colour = 201
-	OrangeRed1        Colour = 202
-	IndianRed1        Colour = 204
-	HotPink           Colour = 206
-	MediumOrchid1     Colour = 207
-	DarkOrange        Colour = 208
-	Salmon1           Colour = 209
-	LightCoral        Colour = 210
-	PaleVioletRed1    Colour = 211
-	Orchid2           Colour = 212
-	Orchid1           Colour = 213
-	Orange1           Colour = 214
-	SandyBrown        Colour = 215
-	LightSalmon1      Colour = 216
-	LightPink1        Colour = 217
-	Pink1             Colour = 218
-	Plum1             Colour = 219
-	Gold1             Colour = 220
-	LightGoldenrod2   Colour = 222
-	NavajoWhite1      Colour = 223
-	MistyRose1        Colour = 224
-	Thistle1          Colour = 225
-	Yellow1           Colour = 226
-	LightGoldenrod1   Colour = 227
-	Khaki1            Colour = 228
-	Wheat1            Colour = 229
-	Cornsilk1         Colour = 230
-	Grey100           Colour = 231
-	Grey3             Colour = 232
-	Grey7             Colour = 233
-	Grey11            Colour = 234
-	Grey15            Colour = 235
-	Grey19            Colour = 236
-	Grey23            Colour = 237
-	Grey27            Colour = 238
-	Grey30            Colour = 239
-	Grey35            Colour = 240
-	Grey39            Colour = 241
-	Grey42            Colour = 242
-	Grey46            Colour = 243
-	Grey50            Colour = 244
-	Grey54            Colour = 245
-	Grey58            Colour = 246
-	Grey62            Colour = 247
-	Grey66            Colour = 248
-	Grey70            Colour = 249
-	Grey74            Colour = 250
-	Grey78            Colour = 251
-	Grey82            Colour = 252
-	Grey85            Colour = 253
-	Grey89            Colour = 254
-	Grey93            Colour = 255
-)
-
 type AnsiBuffer struct {
 	enabled bool
 	content strings.Builder
@@ -291,6 +77,26 @@ func NewAnsiFor(f *os.File) *AnsiBuffer {
 	}
 	enabled := (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
 	return &AnsiBuffer{enabled: enabled}
+}
+
+func (ap *AnsiBuffer) CursorLeft(count int) *AnsiBuffer {
+	ap.writeAnsiCommand('D', ';', count)
+	return ap
+}
+
+func (ap *AnsiBuffer) CursorRight(count int) *AnsiBuffer {
+	ap.writeAnsiCommand('C', ';', count)
+	return ap
+}
+
+func (ap *AnsiBuffer) CursorUp(count int) *AnsiBuffer {
+	ap.writeAnsiCommand('A', ';', count)
+	return ap
+}
+
+func (ap *AnsiBuffer) CursorDown(count int) *AnsiBuffer {
+	ap.writeAnsiCommand('B', ';', count)
+	return ap
 }
 
 // Clear resets the internal buffer, after calling it the AnsiBuffer is in a clean state,

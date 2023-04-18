@@ -52,14 +52,14 @@ errorMsg := a.A("Error: ").Fg(Red).S("File not found: %s", fileName).Reset().A("
 
 ### Basic colours
 
-`ansie` supports basic terminal colours: SysBlack, SysRed, SysGreen, SysYellow, SysBlue, SysMagenta, SysCyan and SysWhite.
+`ansie` supports basic terminal colours: Black, Red, Green, Yellow, Blue, Magenta, Cyan and White.
 These colours should be compatible with all terminals of the last 30 years.
 
 Use `AnsiBuffer.Fg()` and `AnsiBuffer.Bg()` to set these colours.
 
 ### 256 colours
 
-Extended colours, like `Black`, `Red`, `Yellow` or `LightGoldenrod3` will use 256-colour ANSI sequences and should also 
+Extended colours, like `BrightBlue`, `Teal`, `Fuchsia` or `LightGoldenrod3` will use 256-colour ANSI sequences and should also 
 work with any terminal of the last 30 years.
 
 Use `AnsiBuffer.Fg()` and `AnsiBuffer.Bg()` to set these colours.
