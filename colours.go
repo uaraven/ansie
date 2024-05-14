@@ -1,3 +1,19 @@
+// Package ansi
+//
+// Adds support for ansi colours in the terminal.
+//
+// Provides fluent API similar to jansi library for Java (https://github.com/fusesource/jansi)
+//
+// ansi supports basic 7-colour, 256 colour and true colour modes. You can also use various attributes,
+// such as underline, strike-out, etc.
+//
+// errMsg := Ansi.A("Error: ").Fg(Red).S("File not found: %s", fileName).Reset().A("Try a different name").String()
+//
+// See https://github.com/uaraven/ansi for more details
+//
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: (c) 2022-2024 Oleksiy Voronin <ovoronin@gmail.com>
+
 package ansie
 
 //goland:noinspection ALL
@@ -18,7 +34,7 @@ const (
 	Silver            Colour = 7
 	Grey              Colour = 8
 	BrightRed         Colour = 9
-	BrightGreen       Colour = 9
+	BrightGreen       Colour = 10
 	Lime              Colour = 10
 	BrightYellow      Colour = 11
 	BrightBlue        Colour = 12
