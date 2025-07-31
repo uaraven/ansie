@@ -1,6 +1,8 @@
 module github.com/uaraven/ansie
 
-go 1.14
+go 1.23.0
+
+toolchain go1.23.1
 
 require (
 	github.com/onsi/gomega v1.24.1
