@@ -23,8 +23,9 @@ func TestNewScreen(t *testing.T) {
 	g.Expect(s.Height).To(Equal(24), "Expected terminal height to be 24")
 	state, err := m.GetState()
 	g.Expect(err).To(BeNil(), "Expected no error when reading terminal state")
-	g.Expect(state.Lflag&uint64(unix.ECHO)).ToNot(Equal(uint64(0)), "Expected terminal to have ECHO flag set")
-	g.Expect(state.Lflag&uint64(unix.ICANON)).ToNot(Equal(uint64(0)), "Expected terminal to have ICANON flag set")
+	lflag := uint32(state.Lflag)
+	g.Expect(lflag&uint32(unix.ECHO)).ToNot(Equal(uint32(0)), "Expected terminal to have ECHO flag set")
+	g.Expect(lflag&uint32(unix.ICANON)).ToNot(Equal(uint32(0)), "Expected terminal to have ICANON flag set")
 
 	g.Expect(m.Buffer.String()).To(ContainSubstring("\033[?1049h"), "Expected no output in mock terminal buffer")
 }
@@ -67,8 +68,9 @@ func TestScreen_SetRawMode(t *testing.T) {
 	_ = s.SetRawMode(true)
 	state, err := m.GetState()
 	g.Expect(err).To(BeNil(), "Expected no error when reading terminal state")
-	g.Expect(state.Lflag&uint64(unix.ECHO)).To(Equal(uint64(0)), "Expected terminal to have ECHO flag cleared")
-	g.Expect(state.Lflag&uint64(unix.ICANON)).To(Equal(uint64(0)), "Expected terminal to have ICANON flag cleared")
+	lflag := uint32(state.Lflag)
+	g.Expect(lflag&uint32(unix.ECHO)).To(Equal(uint32(0)), "Expected terminal to have ECHO flag cleared")
+	g.Expect(lflag&uint32(unix.ICANON)).To(Equal(uint32(0)), "Expected terminal to have ICANON flag cleared")
 
 }
 
