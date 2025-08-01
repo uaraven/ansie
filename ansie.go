@@ -18,6 +18,7 @@ package ansie
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -55,13 +56,15 @@ const (
 
 type AnsiBuffer struct {
 	enabled bool
-	content strings.Builder
+	// ColorCompatibility allows usage of 24-bit colours on terminals that support only 256-colour mode when enabled.
+	ColorCompatibility bool
+	content            strings.Builder
 }
 
 // NewAnsi creates a new AnsiBuffer. It doesn't assume anything about the device that the output will be
 // directed to.
 func NewAnsi() *AnsiBuffer {
-	return &AnsiBuffer{enabled: true}
+	return &AnsiBuffer{enabled: true, ColorCompatibility: false}
 }
 
 // Ansi is a default instance of AnsiBuffer
@@ -76,7 +79,7 @@ func NewAnsiFor(f *os.File) *AnsiBuffer {
 		panic(err)
 	}
 	enabled := (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
-	return &AnsiBuffer{enabled: enabled}
+	return &AnsiBuffer{enabled: enabled, ColorCompatibility: false}
 }
 
 func (ap *AnsiBuffer) CursorLeft(count int) *AnsiBuffer {
@@ -134,8 +137,11 @@ func (ap *AnsiBuffer) Reset() *AnsiBuffer {
 	return ap
 }
 
-// Fg sets foreground colour. When using SysColour constants, like SysRed or SysYellow, the most basic and most compatible
-// ANSI sequence will be used. Using any of other colour constants or integer values will use 256-colour ANSI sequence
+// Fg sets foreground colour. If colour is one of the standard 8 colours, it will use a basic ANSI sequence.
+// If colour is larger than 8, it will be treated as a 256-colour code and the corresponding ANSI sequence will be used.
+// To use 24-bit colour on supported terminals, use FgRgb or FgRgbI methods instead.
+// To use 24-bit colour with 256-colour terminals, use FgRgb6 method or Rgb6x6x6 function to convert RGB values
+// to 256-colour code.
 func (ap *AnsiBuffer) Fg(colour Colour) *AnsiBuffer {
 	if colour < 8 {
 		ap.writeAnsiSeq(30 + colour)
@@ -145,7 +151,11 @@ func (ap *AnsiBuffer) Fg(colour Colour) *AnsiBuffer {
 	return ap
 }
 
-// Bg sets background colour to one of standard 8 colours
+// Bg sets background colour. If colour is one of the standard 8 colours, it will use a basic ANSI sequence.
+// If colour is larger than 8, it will be treated as a 256-colour code and the corresponding ANSI sequence will be used.
+// To use 24-bit colour on supported terminals, use BgRgb or BgRgbI methods instead.
+// To use 24-bit colour with 256-colour terminals, use BgRgb6 method or Rgb6x6x6 function to convert RGB values
+// to 256-colour code.
 func (ap *AnsiBuffer) Bg(colour Colour) *AnsiBuffer {
 	if colour < 8 {
 		ap.writeAnsiSeq(40 + colour)
@@ -187,6 +197,9 @@ func (ap *AnsiBuffer) BgHi(colour Colour) *AnsiBuffer {
 
 // FgRgb sets foreground colour using "true colour" RGB colour
 func (ap *AnsiBuffer) FgRgb(r, g, b uint) *AnsiBuffer {
+	if ap.ColorCompatibility {
+		ap.Fg(Rgb6x6x6(r, g, b))
+	}
 	ap.writeAnsiSeq(38, 2, int(clip(r, 255)), int(clip(g, 255)), int(clip(b, 255)))
 	return ap
 }
@@ -196,12 +209,18 @@ func (ap *AnsiBuffer) FgRgbI(i uint) *AnsiBuffer {
 	r := (i >> 16) & 0xFF
 	g := (i >> 8) & 0xFF
 	b := i & 0xFF
+	if ap.ColorCompatibility {
+		ap.Fg(Rgb6x6x6(r, g, b))
+	}
 	ap.writeAnsiSeq(38, 2, int(clip(r, 255)), int(clip(g, 255)), int(clip(b, 255)))
 	return ap
 }
 
 // BgRgb sets foreground colour using "true colour" RGB colour
 func (ap *AnsiBuffer) BgRgb(r, g, b uint) *AnsiBuffer {
+	if ap.ColorCompatibility {
+		ap.Bg(Rgb6x6x6(r, g, b))
+	}
 	ap.writeAnsiSeq(48, 2, int(clip(r, 255)), int(clip(g, 255)), int(clip(b, 255)))
 	return ap
 }
@@ -211,6 +230,9 @@ func (ap *AnsiBuffer) BgRgbI(i uint) *AnsiBuffer {
 	r := (i >> 16) & 0xFF
 	g := (i >> 8) & 0xFF
 	b := i & 0xFF
+	if ap.ColorCompatibility {
+		ap.Bg(Rgb6x6x6(r, g, b))
+	}
 	ap.writeAnsiSeq(48, 2, int(clip(r, 255)), int(clip(g, 255)), int(clip(b, 255)))
 	return ap
 }
@@ -218,7 +240,7 @@ func (ap *AnsiBuffer) BgRgbI(i uint) *AnsiBuffer {
 // FgRgb6 sets foreground RGB colour as supported by 256-colour ANSI sequence
 // In this mode each colour component is represented by a value from 0 to 5.
 // Values beyond range of [0..5] are clipped
-// R, G an B values are combined to get one of 216 colours supported by terminal
+// R, G and B values are combined to get one of 216 colours supported by terminal
 func (ap *AnsiBuffer) FgRgb6(r, g, b uint) *AnsiBuffer {
 	colour := RgbTo216Colours(r, g, b)
 	return ap.Fg(colour)
@@ -230,27 +252,27 @@ func (ap *AnsiBuffer) BgRgb6(r, g, b uint) *AnsiBuffer {
 	return ap.Bg(colour)
 }
 
-// FgGray sets foreground colour that is the shade of gray. intensity is a value in a range [0..23]. It is converted to
-// one of standard 24 gray shades in the 256-colour palette
+// FgGray sets foreground colour that is the shade of grey. intensity is a value in a range [0..23]. It is converted to
+// one of standard 24 grey shades in the 256-colour palette
 func (ap *AnsiBuffer) FgGray(intensity uint) *AnsiBuffer {
 	return ap.Fg(Colour(232 + clip(intensity, 23)))
 }
 
-// BgGray sets background colour that is the shade of gray. intensity is a value in a range [0..24]. It is converted to
-// one of standard 24 gray shades in the 256-colour palette
+// BgGray sets background colour that is the shade of grey. intensity is a value in a range [0..24]. It is converted to
+// one of standard 24 grey shades in the 256-colour palette
 func (ap *AnsiBuffer) BgGray(intensity uint) *AnsiBuffer {
 	return ap.Bg(Colour(232 + clip(intensity, 23)))
 }
 
-// FgGrayF sets foreground colour that is the shade of gray. intensity is a floating point value in a range [0..1].
-// It is converted to one of standard 24 gray shades in the 256-colour palette
+// FgGrayF sets foreground colour that is the shade of grey. intensity is a floating point value in a range [0..1].
+// It is converted to one of standard 24 grey shades in the 256-colour palette
 func (ap *AnsiBuffer) FgGrayF(intensity float64) *AnsiBuffer {
 	gray := ap.shadeOfGrayColour(intensity)
 	return ap.Fg(gray)
 }
 
-// BgGrayF sets background colour that is the shade of gray. intensity is a floating point value in a range [0..1].
-// It is converted to one of standard 24 gray shades in the 256-colour palette
+// BgGrayF sets background colour that is the shade of grey. intensity is a floating point value in a range [0..1].
+// It is converted to one of standard 24 grey shades in the 256-colour palette
 func (ap *AnsiBuffer) BgGrayF(intensity float64) *AnsiBuffer {
 	gray := ap.shadeOfGrayColour(intensity)
 	return ap.Bg(gray)
@@ -274,7 +296,7 @@ func (ap *AnsiBuffer) CR() *AnsiBuffer {
 	return ap
 }
 
-// Esc allows to add custom Esc sequence to the buffer
+// Esc allows adding a custom Esc sequence to the buffer
 // The sequence that will be added is:
 //
 // ESC[codes sep codes sep codes sep command
@@ -285,17 +307,27 @@ func (ap *AnsiBuffer) Esc(command rune, sep rune, codes ...int) *AnsiBuffer {
 	return ap
 }
 
-// EscM allows to add custom SGR sequences to the output
+// EscM allows adding custom SGR sequences to the output
 // EscM(38, 2, 0, 0, 255) will add sequence 'ESC[38;2;0;0;255m' to enable bright blue RGB colour
 func (ap *AnsiBuffer) EscM(codes ...int) *AnsiBuffer {
 	ap.writeAnsiSeq(codes...)
 	return ap
 }
 
-// RgbTo216Colours converts a colour represented as R,G,B values of 0 to 5 to one of 216 colours
+// RgbTo216Colours converts a colour represented as R, G, B values of 0 to 5 to one of 216 colours
 // in 256-colour palette
 func RgbTo216Colours(r uint, g uint, b uint) Colour {
 	colour := 16 + 36*clip(r, 5) + 6*clip(g, 5) + clip(b, 5)
+	return Colour(colour)
+}
+
+// Rgb6x6x6 creates a colour in 256-colour palette from 24-bit RGB colour represented as 3 values
+func Rgb6x6x6(r uint, g uint, b uint) Colour {
+	if r == g && g == b {
+		// If all components are the same, we can use grey colour
+		return Colour(232 + scaleColor(r, 24)) // 232 is the first grey colour in 256-colour palette
+	}
+	colour := 16 + 36*scaleColor(r, 6) + 6*scaleColor(g, 6) + scaleColor(b, 6)
 	return Colour(colour)
 }
 
@@ -320,6 +352,14 @@ func clip(c uint, high uint) uint {
 	} else {
 		return c
 	}
+}
+
+func scaleColor(c uint, maxValues int) uint {
+	if c > 255 {
+		c = 255
+	}
+	scaleFactor := float64(maxValues-1) / 255.0
+	return uint(math.Round(float64(c) * scaleFactor))
 }
 
 func (ap *AnsiBuffer) shadeOfGrayColour(intensity float64) int {
