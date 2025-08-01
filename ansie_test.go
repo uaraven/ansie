@@ -269,3 +269,47 @@ func TestClip(t *testing.T) {
 	g.Expect(clip(150, 4)).To(Equal(uint(4)))
 	g.Expect(clip(3, 4)).To(Equal(uint(3)))
 }
+
+func TestRgb6x6x6(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	// Gray color: all components equal
+	g.Expect(Rgb6x6x6(0, 0, 0)).To(Equal(Colour(232)))
+	g.Expect(Rgb6x6x6(255, 255, 255)).To(Equal(Colour(255)))
+	g.Expect(Rgb6x6x6(127, 127, 127)).To(Equal(Colour(243)))
+
+	// Non-gray color: different components
+	g.Expect(Rgb6x6x6(255, 0, 0)).To(Equal(Colour(196)))   // bright red
+	g.Expect(Rgb6x6x6(0, 255, 0)).To(Equal(Colour(46)))    // bright green
+	g.Expect(Rgb6x6x6(0, 0, 255)).To(Equal(Colour(21)))    // bright blue
+	g.Expect(Rgb6x6x6(255, 255, 0)).To(Equal(Colour(226))) // yellow
+	g.Expect(Rgb6x6x6(55, 255, 214)).To(Equal(Colour(86)))
+}
+
+func TestFgColorCompatibility(t *testing.T) {
+	g := NewGomegaWithT(t)
+	a := NewAnsi()
+
+	s := a.FgRgb(255, 0, 0).A("text").String()
+	g.Expect(s).To(Equal("\033[38;2;255;0;0;mtext"))
+	a.ColorCompatibility = true
+	s = a.FgRgb(255, 0, 0).A("text").String()
+	g.Expect(s).To(Equal("\033[38;5;196;m\033[38;2;255;0;0;mtext"))
+
+	s = a.FgRgb(127, 127, 127).A("text").String()
+	g.Expect(s).To(Equal("\033[38;5;243;m\033[38;2;127;127;127;mtext"))
+}
+
+func TestBgColorCompatibility(t *testing.T) {
+	g := NewGomegaWithT(t)
+	a := NewAnsi()
+
+	s := a.BgRgb(255, 0, 0).A("text").String()
+	g.Expect(s).To(Equal("\033[48;2;255;0;0;mtext"))
+	a.ColorCompatibility = true
+	s = a.BgRgb(255, 0, 0).A("text").String()
+	g.Expect(s).To(Equal("\033[48;5;196;m\033[48;2;255;0;0;mtext"))
+
+	s = a.BgRgb(127, 127, 127).A("text").String()
+	g.Expect(s).To(Equal("\033[48;5;243;m\033[48;2;127;127;127;mtext"))
+}

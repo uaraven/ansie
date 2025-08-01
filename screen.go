@@ -25,12 +25,19 @@ func (err ScreenError) Error() string {
 	return fmt.Sprintf("screen error: %s, caused by: %v", err.Message, err.Cause)
 }
 
+// Terminal interface defines abstract terminal operations.
 type Terminal interface {
+	// Fd returns the file descriptor of the terminal.
 	Fd() int
+	// Write writes data to the terminal.
 	Write(p []byte) (n int, err error)
+	// IsTerminal checks if the file descriptor is a terminal.
 	IsTerminal() bool
+	// GetState retrieves the current terminal state.
 	GetState() (*unix.Termios, error)
+	// SetState sets the terminal state to the provided termios structure.
 	SetState(termState *unix.Termios) error
+	// GetSize retrieves the size of the terminal.
 	GetSize() (*unix.Winsize, error) // Returns width and height of the terminal
 }
 

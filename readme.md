@@ -8,7 +8,7 @@ Get the library:
 
     go get github.com/uaraven/ansie
 
-You will need Go 1.14 or higher to use it.
+You will need Go 1.23 or higher to use it.
 
 `ansie` supports basic 7-colour, 256 colour and true colour modes. You can also use various attributes, such as underline, strike-out, etc.
 
@@ -78,11 +78,37 @@ to one of the closest 24 grayscale colours.
 
 Use methods  `AnsiBuffer.FgGrayF(float64)` and `AnsiBuffer.BgGrayF(float64)`.
 
+
 ### "True colour"
 
 `ansie` supports full 24-bit colours using RGB values, which should be supported by all modern terminals, but it isn't. 
 Standard MacOS terminal, for example, doesn't support 24 bit color 
-Use following functions to set 24-bit colours: `AnsiBuffer.FgRgb(r,g,b int)`, `AnsiBuffer.FgRgbI(rgb int)`, `AnsiBuffer.BgRgb(r,g,b int)` and `AnsiBuffer.BgRgbI(rgb int)` 
+Use following functions to set 24-bit colours: `AnsiBuffer.FgRgb(r,g,b int)`, `AnsiBuffer.FgRgbI(rgb int)`, `AnsiBuffer.BgRgb(r,g,b int)` and `AnsiBuffer.BgRgbI(rgb int)`
+
+To use 24-bit colours on terminals that do not support 256-colour mode, you can convert 24-bit colour to 256-colour palette
+using the Rgb6x6x6 function. This function will map RGB values to the closest 256-colour index, including grayscale.
+
+```go
+    color256 := ansie.Rgb6x6x6(255, 128, 64) // Converts RGB to 256-colour index
+```
+
+### True colour compatibility mode
+
+To use 24-bit colours on terminals that do not support 256-colour mode, you can enable compatibility mode.
+
+Compatibility mode works by writing two sequences to the terminal: one for 256-colour mode and another for true colour.
+If terminal supports true colour, then true colour sequence will override 256-colour sequence, otherwise it will be ignored.
+
+Colour compatibility mode is disabled by default, but you can enable it by setting `ColorCompatibility` field of `AnsiBuffer` to `true`.
+
+```go
+import . "github.com/uaraven/ansie"
+a := NewAnsiFor(os.Stdout)
+a.ColorCompatibility = true // Enable compatibility mode
+a.FgRgb(255, 128, 64).A("This text will be in true colour").Reset().CR().Print()
+```
+
+`FgRgb()`, `FgRgbI()`, `BgRgb()` and `BgRgbI()` methods support compatibility mode.
 
 ### Colour names
 
