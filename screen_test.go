@@ -16,8 +16,8 @@ func TestNewScreen(t *testing.T) {
 		defer s.Close()
 	}
 	g.Expect(err).To(BeNil(), "Expected no error when creating a new screen")
-	g.Expect(s.Width).To(Equal(80), "Expected terminal width to be non-zero")
-	g.Expect(s.Height).To(Equal(24), "Expected terminal width to be non-zero")
+	g.Expect(s.Width).To(Equal(80), "Expected terminal width to be 80")
+	g.Expect(s.Height).To(Equal(24), "Expected terminal height to be 24")
 	state, err := m.GetState()
 	g.Expect(err).To(BeNil(), "Expected no error when reading terminal state")
 	g.Expect(state.Lflag&uint64(unix.ECHO)).ToNot(Equal(uint64(0)), "Expected terminal to have ECHO flag set")
