@@ -20,10 +20,10 @@ func TestNewScreen(t *testing.T) {
 	g.Expect(s.Height).To(Equal(24), "Expected terminal width to be non-zero")
 	state, err := m.GetState()
 	g.Expect(err).To(BeNil(), "Expected no error when reading terminal state")
-	g.Expect(state.Lflag&unix.ECHO).ToNot(Equal(unix.ECHO), "Expected terminal to not have ECHO flag set")
-	g.Expect(state.Lflag&unix.ICANON).ToNot(Equal(unix.ICANON), "Expected terminal to not have ICANON flag set")
+	g.Expect(state.Lflag&uint64(unix.ECHO)).ToNot(Equal(uint64(0)), "Expected terminal to have ECHO flag set")
+	g.Expect(state.Lflag&uint64(unix.ICANON)).ToNot(Equal(uint64(0)), "Expected terminal to have ICANON flag set")
 
-	g.Expect(m.Buffer.String()).To(ContainSubstring("[?1049h"), "Expected no output in mock terminal buffer")
+	g.Expect(m.Buffer.String()).To(ContainSubstring("\033[?1049h"), "Expected no output in mock terminal buffer")
 }
 
 func TestCloseScreen(t *testing.T) {
@@ -31,11 +31,11 @@ func TestCloseScreen(t *testing.T) {
 	m := NewMockTerminal(80, 24)
 	s, err := NewScreenFromTerminal(m)
 	g.Expect(err).To(BeNil(), "Expected no error when creating a new screen")
-	g.Expect(m.Buffer.String()).To(ContainSubstring("[?1049h"), "Expected switch to alternative buffer")
-	g.Expect(m.Buffer.String()).ToNot(ContainSubstring("[?25l"), "Expected cursor not to be hidden")
+	g.Expect(m.Buffer.String()).To(ContainSubstring("\033[?1049h"), "Expected switch to alternative buffer")
+	g.Expect(m.Buffer.String()).ToNot(ContainSubstring("\033[?25l"), "Expected cursor not to be hidden")
 	s.Close()
-	g.Expect(m.Buffer.String()).To(ContainSubstring("[?1049l"), "Expected switch from alternative buffer")
-	g.Expect(m.Buffer.String()).ToNot(ContainSubstring("[2J"), "Expected screen not cleared")
+	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[?1049l"), "Expected switch from alternative buffer")
+	g.Expect(m.Buffer.String()).ToNot(ContainSubstring("\u001B[2J"), "Expected screen not cleared")
 	g.Expect(m.Buffer.String()).To(ContainSubstring("[?25h"), "Expected cursor to be shown")
 }
 
@@ -52,6 +52,21 @@ func TestScreenResize(t *testing.T) {
 	g.Expect(s.Height).To(Equal(30), "Expected terminal height to be updated")
 }
 
+func TestScreen_SetRawMode(t *testing.T) {
+	g := NewGomegaWithT(t)
+	m := NewMockTerminal(80, 24)
+	s, err := NewScreenFromTerminal(m)
+	if err == nil {
+		defer s.Close()
+	}
+	_ = s.SetRawMode(true)
+	state, err := m.GetState()
+	g.Expect(err).To(BeNil(), "Expected no error when reading terminal state")
+	g.Expect(state.Lflag&uint64(unix.ECHO)).To(Equal(uint64(0)), "Expected terminal to have ECHO flag cleared")
+	g.Expect(state.Lflag&uint64(unix.ICANON)).To(Equal(uint64(0)), "Expected terminal to have ICANON flag cleared")
+
+}
+
 func TestCursorManipulation(t *testing.T) {
 	g := NewGomegaWithT(t)
 	m := NewMockTerminal(80, 24)
@@ -60,9 +75,9 @@ func TestCursorManipulation(t *testing.T) {
 		defer s.Close()
 	}
 	s.HideCursor()
-	g.Expect(m.Buffer.String()).To(ContainSubstring("[?25l"), "Expected cursor to be hidden")
+	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[?25l"), "Expected cursor to be hidden")
 	s.ShowCursor()
-	g.Expect(m.Buffer.String()).To(ContainSubstring("[?25h"), "Expected cursor to be shown")
+	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[?25h"), "Expected cursor to be shown")
 	s.MoveCursorTo(10, 5)
-	g.Expect(m.Buffer.String()).To(ContainSubstring("[5;10H"), "Expected cursor to move to (10, 5)")
+	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[5;10H"), "Expected cursor to move to (10, 5)")
 }

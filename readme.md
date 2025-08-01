@@ -117,7 +117,32 @@ matching Xterm names.
 
 Note that some of the Xterm colour names are duplicated with the different palette index value. In the case of duplicates
 one random name was selected and added to `ansie` constants.
+                     
 
+## Terminal manipulation
+
+`ansie` provides a basic terminal manipulation API, which allows you to read terminal size, move the cursor, clear the screen.
+You can use `Screen` struct to manipulate the terminal.
+
+```go
+import . "github.com/uaraven/ansie"
+
+screen, err := NewScreen() // Create a new screen for stdout
+if err != nil {
+    panic(err) // Handle error if screen creation fails
+}
+defer screen.Close() // Ensure the screen is closed when done
+screen.Clear() // Clear the screen
+screen.MoveCursor(10, 20) // Move cursor to line 10, column 20
+fmt.Println(Ansi.FgRgb(255,255,255).A("Hello, world!").Reset().String()) // Print text at the new cursor position
+```
+                                                
+When creating a new `Screen`, it will automatically switch to an alternative buffer, which allows you to manipulate the terminal without affecting the current output.
+You must use `Screen.Close()` to return to the main buffer and restore the terminal state.
+
+Raw mode is not enabled by default, but you can enable it with `Screen.SetRawMode(true)`.
+
+`Screen` struct is in beta state and may change in the future. It is not recommended to use it in production code yet.
 
 ## License
 

@@ -54,8 +54,8 @@ func (m *MockTerminal) SetState(termState *unix.Termios) error {
 }
 
 // Write implements Terminal.
-func (m *MockTerminal) Write(p []byte) (n int, err error) {
-	return m.Buffer.Write(p)
+func (m *MockTerminal) Write(s string) (n int, err error) {
+	return m.Buffer.WriteString(s)
 }
 
 // GetSize implements Terminal.
