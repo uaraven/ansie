@@ -178,9 +178,9 @@ func (s *Screen) SetCursorVisible(visible bool) {
 	}
 	s.CursorVisible = visible
 	if visible {
-		s.writeEsc("?25h") // Hide cursor
+		s.writeEsc("?25h") // Show cursor
 	} else {
-		s.writeEsc("?25l") // Show cursor
+		s.writeEsc("?25l") // Hide cursor
 	}
 }
 
