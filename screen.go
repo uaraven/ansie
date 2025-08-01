@@ -180,7 +180,7 @@ func (s *Screen) HideCursor() {
 // ShowCursor shows the cursor in the terminal.
 func (s *Screen) ShowCursor() {
 	s.CursorVisible = true
-	s.writeEsc("?25h") // Hide cursor
+	s.writeEsc("?25h") // Show cursor
 }
 
 // MoveCursorTo moves the cursor to the specified (x, y) position in the terminal.
