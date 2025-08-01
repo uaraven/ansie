@@ -229,5 +229,5 @@ func (s *Screen) SetRawMode(rawMode bool) error {
 	} else {
 		termState.Lflag |= unix.ECHO | unix.ICANON // Enable echo and canonical mode
 	}
-	return s.terminal.SetState(&termState) // Ignore error for simplicity
+	return s.terminal.SetState(&termState)
 }
