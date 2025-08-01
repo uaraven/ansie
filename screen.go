@@ -171,16 +171,17 @@ func (s *Screen) resize() error {
 	return nil
 }
 
-// HideCursor hides the cursor in the terminal.
-func (s *Screen) HideCursor() {
-	s.CursorVisible = false
-	s.writeEsc("?25l") // Hide cursor
-}
-
-// ShowCursor shows the cursor in the terminal.
-func (s *Screen) ShowCursor() {
-	s.CursorVisible = true
-	s.writeEsc("?25h") // Show cursor
+// SetCursorVisible shows or hides the cursor in the terminal.
+func (s *Screen) SetCursorVisible(visible bool) {
+	if visible == s.CursorVisible {
+		return
+	}
+	s.CursorVisible = visible
+	if visible {
+		s.writeEsc("?25h") // Hide cursor
+	} else {
+		s.writeEsc("?25l") // Show cursor
+	}
 }
 
 // MoveCursorTo moves the cursor to the specified (x, y) position in the terminal.
@@ -204,7 +205,7 @@ func (s *Screen) Close() {
 		close(s.signals)
 		// try to enter alternate buffer if not already in it, this is a no-op if already in alternate buffer
 		s.enterAlternateBuffer()
-		s.ShowCursor()
+		s.SetCursorVisible(true)
 		s.exitAlternateBuffer()
 		_ = unix.IoctlSetTermios(s.terminal.Fd(), setTermios, &s.initialTermios) // Restore terminal state
 	}

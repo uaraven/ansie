@@ -18,6 +18,7 @@ package ansie
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -324,9 +325,9 @@ func RgbTo216Colours(r uint, g uint, b uint) Colour {
 func Rgb6x6x6(r uint, g uint, b uint) Colour {
 	if r == g && g == b {
 		// If all components are the same, we can use grey colour
-		return Colour(232 + scaleColor(r, 23)) // 232 is the first grey colour in 256-colour palette
+		return Colour(232 + scaleColor(r, 24)) // 232 is the first grey colour in 256-colour palette
 	}
-	colour := 16 + 36*scaleColor(r, 5) + 6*scaleColor(g, 5) + scaleColor(b, 5)
+	colour := 16 + 36*scaleColor(r, 6) + 6*scaleColor(g, 6) + scaleColor(b, 6)
 	return Colour(colour)
 }
 
@@ -357,8 +358,8 @@ func scaleColor(c uint, maxValues int) uint {
 	if c > 255 {
 		c = 255
 	}
-	scaleFactor := float64(maxValues) / 255.0
-	return uint(float64(c) * scaleFactor)
+	scaleFactor := float64(maxValues-1) / 255.0
+	return uint(math.Round(float64(c) * scaleFactor))
 }
 
 func (ap *AnsiBuffer) shadeOfGrayColour(intensity float64) int {

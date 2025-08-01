@@ -133,7 +133,7 @@ if err != nil {
 }
 defer screen.Close() // Ensure the screen is closed when done
 screen.Clear() // Clear the screen
-screen.MoveCursor(10, 20) // Move cursor to line 10, column 20
+screen.MoveCursorTo(10, 20) // Move cursor to line 10, column 20
 fmt.Println(Ansi.FgRgb(255,255,255).A("Hello, world!").Reset().String()) // Print text at the new cursor position
 ```
                                                 

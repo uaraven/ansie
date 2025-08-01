@@ -33,6 +33,8 @@ func TestCloseScreen(t *testing.T) {
 	g.Expect(err).To(BeNil(), "Expected no error when creating a new screen")
 	g.Expect(m.Buffer.String()).To(ContainSubstring("\033[?1049h"), "Expected switch to alternative buffer")
 	g.Expect(m.Buffer.String()).ToNot(ContainSubstring("\033[?25l"), "Expected cursor not to be hidden")
+	s.SetCursorVisible(false)
+	m.ResetBuffer() // Reset buffer to check after closing
 	s.Close()
 	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[?1049l"), "Expected switch from alternative buffer")
 	g.Expect(m.Buffer.String()).ToNot(ContainSubstring("\u001B[2J"), "Expected screen not cleared")
@@ -74,9 +76,9 @@ func TestCursorManipulation(t *testing.T) {
 	if err == nil {
 		defer s.Close()
 	}
-	s.HideCursor()
+	s.SetCursorVisible(false)
 	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[?25l"), "Expected cursor to be hidden")
-	s.ShowCursor()
+	s.SetCursorVisible(true)
 	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[?25h"), "Expected cursor to be shown")
 	s.MoveCursorTo(10, 5)
 	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[5;10H"), "Expected cursor to move to (10, 5)")

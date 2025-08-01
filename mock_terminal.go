@@ -76,4 +76,8 @@ func (m *MockTerminal) SetSize(w, h int, c chan os.Signal) {
 	}
 }
 
+func (m *MockTerminal) ResetBuffer() {
+	m.Buffer.Reset()
+}
+
 var _ Terminal = (*MockTerminal)(nil)
