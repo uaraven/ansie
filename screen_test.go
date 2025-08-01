@@ -76,6 +76,7 @@ func TestScreen_SetCursorVisible(t *testing.T) {
 	if err == nil {
 		defer s.Close()
 	}
+	g.Expect(err).To(BeNil(), "Expected no error when creating a new screen")
 	s.SetCursorVisible(false)
 	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[?25l"), "Expected cursor to be hidden")
 	s.SetCursorVisible(true)
@@ -89,6 +90,7 @@ func TestScreen_MoveCursorTo(t *testing.T) {
 	if err == nil {
 		defer s.Close()
 	}
+	g.Expect(err).To(BeNil(), "Expected no error when creating a new screen")
 	s.MoveCursorTo(10, 5)
 	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[5;10H"), "Expected cursor to move to (10, 5)")
 	m.ResetBuffer()
