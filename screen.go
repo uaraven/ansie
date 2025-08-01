@@ -203,7 +203,7 @@ func (s *Screen) Clear() {
 func (s *Screen) Close() {
 	if s.closed.CompareAndSwap(false, true) {
 		close(s.signals)
-		// try to enter alternate buffer if not already in it, this is a no-op if already in alternate buffer
+		// Ensure we are in the alternate buffer before cleanup to maintain consistent terminal state
 		s.enterAlternateBuffer()
 		s.SetCursorVisible(true)
 		s.exitAlternateBuffer()
