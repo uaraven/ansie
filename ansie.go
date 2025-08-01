@@ -78,7 +78,7 @@ func NewAnsiFor(f *os.File) *AnsiBuffer {
 		panic(err)
 	}
 	enabled := (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
-	return &AnsiBuffer{enabled: enabled}
+	return &AnsiBuffer{enabled: enabled, ColorCompatibility: false}
 }
 
 func (ap *AnsiBuffer) CursorLeft(count int) *AnsiBuffer {
