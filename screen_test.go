@@ -69,7 +69,7 @@ func TestScreen_SetRawMode(t *testing.T) {
 
 }
 
-func TestCursorManipulation(t *testing.T) {
+func TestScreen_SetCursorVisible(t *testing.T) {
 	g := NewGomegaWithT(t)
 	m := NewMockTerminal(80, 24)
 	s, err := NewScreenFromTerminal(m)
@@ -80,6 +80,23 @@ func TestCursorManipulation(t *testing.T) {
 	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[?25l"), "Expected cursor to be hidden")
 	s.SetCursorVisible(true)
 	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[?25h"), "Expected cursor to be shown")
+}
+
+func TestScreen_MoveCursorTo(t *testing.T) {
+	g := NewGomegaWithT(t)
+	m := NewMockTerminal(80, 24)
+	s, err := NewScreenFromTerminal(m)
+	if err == nil {
+		defer s.Close()
+	}
 	s.MoveCursorTo(10, 5)
 	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[5;10H"), "Expected cursor to move to (10, 5)")
+	m.ResetBuffer()
+	s.MoveCursorTo(0, 5)
+	g.Expect(m.Buffer.String()).ToNot(ContainSubstring("\u001B["), "Expected cursor to not move")
+	m.ResetBuffer()
+	s.MoveCursorTo(20, 25)
+	g.Expect(m.Buffer.String()).ToNot(ContainSubstring("\u001B["), "Expected cursor to not move")
+	s.MoveCursorTo(80, 24)
+	g.Expect(m.Buffer.String()).To(ContainSubstring("\u001B[24;80H"), "Expected cursor to move to (80, 24)")
 }
