@@ -144,6 +144,8 @@ Raw mode is not enabled by default, but you can enable it with `Screen.SetRawMod
 
 `Screen` struct is in beta state and may change in the future. It is not recommended to use it in production code yet.
 
+Terminal manipulation API is not supported on Windows.
+
 ## License
 
 `ansie` is distributed under the terms of MIT license.
