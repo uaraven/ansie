@@ -57,6 +57,8 @@ These colours should be compatible with all terminals of the last 30 years.
 
 Use `AnsiBuffer.Fg()` and `AnsiBuffer.Bg()` to set these colours.
 
+![](images/std-colours.png)
+
 ### 256 colours
 
 Extended colours, like `BrightBlue`, `Teal`, `Fuchsia` or `LightGoldenrod3` will use 256-colour ANSI sequences and should also 
@@ -67,6 +69,8 @@ Use `AnsiBuffer.Fg()` and `AnsiBuffer.Bg()` to set these colours.
 216 colours of the Xterm palette can be set using RGB values, where each colour component is limited to the values from
 0 to 5 (inclusive), forming a 6x6x6 colour cube.
 Use following functions to set 6-value component colours: `AnsiBuffer.FgRgb6(r,g,b uint)` and `AnsiBuffer.BgRgb6(r,g,b uint)`
+
+![](images/256-colours.png)
 
 Shade of gray colours can be set for foreground and background using intensity values.
 
