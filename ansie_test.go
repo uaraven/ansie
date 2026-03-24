@@ -1,14 +1,15 @@
 /*
  * SPDX-License-Identifier: MIT
- * SPDX-FileCopyrightText: (c) 2022 Oleksiy Voronin <ovoronin@gmail.com>
+ * SPDX-FileCopyrightText: (c) 2022 Oleksiy Voronin <oles@voronin.cc>
  */
 package ansie
 
 import (
-	. "github.com/onsi/gomega"
 	"log"
 	"os"
 	"testing"
+
+	. "github.com/onsi/gomega"
 )
 
 func TestAnsiBuffer_Reset(t *testing.T) {
@@ -312,4 +313,20 @@ func TestBgColorCompatibility(t *testing.T) {
 
 	s = a.BgRgb(127, 127, 127).A("text").String()
 	g.Expect(s).To(Equal("\033[48;5;243;m\033[48;2;127;127;127;mtext"))
+}
+
+func TestClearLine(t *testing.T) {
+	g := NewGomegaWithT(t)
+	a := NewAnsi()
+
+	s := a.ClearLine().Fg(Fuchsia).A("text").String()
+	g.Expect(s).To(Equal("\033[2K\033[38;5;13;mtext"))
+}
+
+func TestClearEol(t *testing.T) {
+	g := NewGomegaWithT(t)
+	a := NewAnsi()
+
+	s := a.A("\r").ClearEol().Fg(Fuchsia).A("text").String()
+	g.Expect(s).To(Equal("\r\033[K\033[38;5;13;mtext"))
 }

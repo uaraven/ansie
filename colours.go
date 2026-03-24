@@ -12,7 +12,7 @@
 // See https://github.com/uaraven/ansi for more details
 //
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: (c) 2022-2024 Oleksiy Voronin <ovoronin@gmail.com>
+// SPDX-FileCopyrightText: (c) 2022-2024 Oleksiy Voronin <oles@voronin.cc>
 
 package ansie
 

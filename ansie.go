@@ -12,7 +12,7 @@
 // See https://github.com/uaraven/ansi for more details
 //
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: (c) 2022 Oleksiy Voronin <ovoronin@gmail.com>
+// SPDX-FileCopyrightText: (c) 2022 Oleksiy Voronin <oles@voronin.cc>
 
 package ansie
 
@@ -29,6 +29,7 @@ const esc = "\033["
 type Attribute = int
 
 type Colour = int
+type Color = Colour
 
 //goland:noinspection ALL
 const (
@@ -285,7 +286,7 @@ func (ap *AnsiBuffer) A(text string) *AnsiBuffer {
 }
 
 // S adds formatted (similar to fmt.Sprintf) text to the AnsiBuffer's buffer. The text will be output with the current colours and attributes
-func (ap *AnsiBuffer) S(format string, params ...interface{}) *AnsiBuffer {
+func (ap *AnsiBuffer) S(format string, params ...any) *AnsiBuffer {
 	ap.content.WriteString(fmt.Sprintf(format, params...))
 	return ap
 }
@@ -293,6 +294,18 @@ func (ap *AnsiBuffer) S(format string, params ...interface{}) *AnsiBuffer {
 // CR adds carriage return character (ASCII 13) to the AnsiBuffer's buffer
 func (ap *AnsiBuffer) CR() *AnsiBuffer {
 	ap.content.WriteRune('\n')
+	return ap
+}
+
+// ClearEol clears the current line from the cursor position to the end of the line
+func (ap *AnsiBuffer) ClearEol() *AnsiBuffer {
+	ap.writeAnsiCommand('K', ';')
+	return ap
+}
+
+// ClearLine clears the entire current line
+func (ap *AnsiBuffer) ClearLine() *AnsiBuffer {
+	ap.writeAnsiCommand('K', ';', 2)
 	return ap
 }
 
@@ -336,7 +349,9 @@ func (ap *AnsiBuffer) writeAnsiCommand(command rune, sep rune, codes ...int) {
 		ap.content.WriteString(esc)
 		for _, code := range codes {
 			ap.content.WriteString(strconv.Itoa(code))
-			ap.content.WriteRune(sep)
+			if len(codes) > 1 {
+				ap.content.WriteRune(sep)
+			}
 		}
 		ap.content.WriteRune(command)
 	}
