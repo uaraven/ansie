@@ -347,9 +347,10 @@ func Rgb6x6x6(r uint, g uint, b uint) Colour {
 func (ap *AnsiBuffer) writeAnsiCommand(command rune, sep rune, codes ...int) {
 	if ap.enabled {
 		ap.content.WriteString(esc)
-		for _, code := range codes {
+		l := len(codes)
+		for i, code := range codes {
 			ap.content.WriteString(strconv.Itoa(code))
-			if len(codes) > 1 {
+			if i != l-1 {
 				ap.content.WriteRune(sep)
 			}
 		}
