@@ -82,6 +82,7 @@ to one of the closest 24 grayscale colours.
 
 Use methods  `AnsiBuffer.FgGrayF(float64)` and `AnsiBuffer.BgGrayF(float64)`.
 
+![](images/grayscale.png)
 
 ### "True colour"
 
