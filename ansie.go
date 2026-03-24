@@ -297,13 +297,35 @@ func (ap *AnsiBuffer) CR() *AnsiBuffer {
 	return ap
 }
 
+// LF adds line feed character (ASCII 10) to the AnsiBuffer's buffer
+// Cursor position does not change
+//
+// useful with conjunction with [AnsiBuffer.ClearEol] for moving the cursor
+// to the beginning of the line and clearing the rest of the line
+func (ap *AnsiBuffer) LF() *AnsiBuffer {
+	ap.content.WriteRune('\r')
+	return ap
+}
+
 // ClearEol clears the current line from the cursor position to the end of the line
+//
+// Cursor position does not change
 func (ap *AnsiBuffer) ClearEol() *AnsiBuffer {
 	ap.writeAnsiCommand('K', ';')
 	return ap
 }
 
+// ClearBol clears the current line from the beginning of the line to the cursor position
+//
+// Cursor position does not change
+func (ap *AnsiBuffer) ClearBol() *AnsiBuffer {
+	ap.writeAnsiCommand('K', ';', 1)
+	return ap
+}
+
 // ClearLine clears the entire current line
+//
+// Cursor position is not moved
 func (ap *AnsiBuffer) ClearLine() *AnsiBuffer {
 	ap.writeAnsiCommand('K', ';', 2)
 	return ap
