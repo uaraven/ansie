@@ -170,7 +170,7 @@ func (ap *AnsiBuffer) Bg(colour Colour) *AnsiBuffer {
 //
 // If used with one of 256 colour codes, it will just set the colour, without modifying the intensity
 func (ap *AnsiBuffer) FgHi(colour Colour) *AnsiBuffer {
-	if colour < 7 {
+	if colour <= 7 {
 		ap.writeAnsiSeq(90 + colour)
 		return ap
 	} else {
@@ -188,7 +188,7 @@ func (ap *AnsiBuffer) Attr(attr Attribute) *AnsiBuffer {
 //
 // If used with one of 256 colour codes, it will just set the colour, without modifying the intensity
 func (ap *AnsiBuffer) BgHi(colour Colour) *AnsiBuffer {
-	if colour < 7 {
+	if colour <= 7 {
 		ap.writeAnsiSeq(100 + colour)
 		return ap
 	} else {
