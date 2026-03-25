@@ -12,7 +12,7 @@
 // See https://github.com/uaraven/ansi for more details
 //
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: (c) 2022 Oleksiy Voronin <ovoronin@gmail.com>
+// SPDX-FileCopyrightText: (c) 2022 Oleksiy Voronin <oles@voronin.cc>
 
 package ansie
 
@@ -29,6 +29,7 @@ const esc = "\033["
 type Attribute = int
 
 type Colour = int
+type Color = Colour
 
 //goland:noinspection ALL
 const (
@@ -169,7 +170,7 @@ func (ap *AnsiBuffer) Bg(colour Colour) *AnsiBuffer {
 //
 // If used with one of 256 colour codes, it will just set the colour, without modifying the intensity
 func (ap *AnsiBuffer) FgHi(colour Colour) *AnsiBuffer {
-	if colour < 7 {
+	if colour <= 7 {
 		ap.writeAnsiSeq(90 + colour)
 		return ap
 	} else {
@@ -187,7 +188,7 @@ func (ap *AnsiBuffer) Attr(attr Attribute) *AnsiBuffer {
 //
 // If used with one of 256 colour codes, it will just set the colour, without modifying the intensity
 func (ap *AnsiBuffer) BgHi(colour Colour) *AnsiBuffer {
-	if colour < 7 {
+	if colour <= 7 {
 		ap.writeAnsiSeq(100 + colour)
 		return ap
 	} else {
@@ -285,7 +286,7 @@ func (ap *AnsiBuffer) A(text string) *AnsiBuffer {
 }
 
 // S adds formatted (similar to fmt.Sprintf) text to the AnsiBuffer's buffer. The text will be output with the current colours and attributes
-func (ap *AnsiBuffer) S(format string, params ...interface{}) *AnsiBuffer {
+func (ap *AnsiBuffer) S(format string, params ...any) *AnsiBuffer {
 	ap.content.WriteString(fmt.Sprintf(format, params...))
 	return ap
 }
@@ -293,6 +294,40 @@ func (ap *AnsiBuffer) S(format string, params ...interface{}) *AnsiBuffer {
 // CR adds carriage return character (ASCII 13) to the AnsiBuffer's buffer
 func (ap *AnsiBuffer) CR() *AnsiBuffer {
 	ap.content.WriteRune('\n')
+	return ap
+}
+
+// LF adds line feed character (ASCII 10) to the AnsiBuffer's buffer
+// Cursor position does not change
+//
+// useful with conjunction with [AnsiBuffer.ClearEol] for moving the cursor
+// to the beginning of the line and clearing the rest of the line
+func (ap *AnsiBuffer) LF() *AnsiBuffer {
+	ap.content.WriteRune('\r')
+	return ap
+}
+
+// ClearEol clears the current line from the cursor position to the end of the line
+//
+// Cursor position does not change
+func (ap *AnsiBuffer) ClearEol() *AnsiBuffer {
+	ap.writeAnsiCommand('K', ';')
+	return ap
+}
+
+// ClearBol clears the current line from the beginning of the line to the cursor position
+//
+// Cursor position does not change
+func (ap *AnsiBuffer) ClearBol() *AnsiBuffer {
+	ap.writeAnsiCommand('K', ';', 1)
+	return ap
+}
+
+// ClearLine clears the entire current line
+//
+// Cursor position is not moved
+func (ap *AnsiBuffer) ClearLine() *AnsiBuffer {
+	ap.writeAnsiCommand('K', ';', 2)
 	return ap
 }
 
@@ -334,9 +369,12 @@ func Rgb6x6x6(r uint, g uint, b uint) Colour {
 func (ap *AnsiBuffer) writeAnsiCommand(command rune, sep rune, codes ...int) {
 	if ap.enabled {
 		ap.content.WriteString(esc)
-		for _, code := range codes {
+		l := len(codes)
+		for i, code := range codes {
 			ap.content.WriteString(strconv.Itoa(code))
-			ap.content.WriteRune(sep)
+			if i != l-1 {
+				ap.content.WriteRune(sep)
+			}
 		}
 		ap.content.WriteRune(command)
 	}

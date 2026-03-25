@@ -1,14 +1,15 @@
 /*
  * SPDX-License-Identifier: MIT
- * SPDX-FileCopyrightText: (c) 2022 Oleksiy Voronin <ovoronin@gmail.com>
+ * SPDX-FileCopyrightText: (c) 2022 Oleksiy Voronin <oles@voronin.cc>
  */
 package ansie
 
 import (
-	. "github.com/onsi/gomega"
 	"log"
 	"os"
 	"testing"
+
+	. "github.com/onsi/gomega"
 )
 
 func TestAnsiBuffer_Reset(t *testing.T) {
@@ -17,7 +18,7 @@ func TestAnsiBuffer_Reset(t *testing.T) {
 	a := NewAnsi()
 	s := a.Reset().String()
 
-	g.Expect(s).To(Equal("\033[0;m"))
+	g.Expect(s).To(Equal("\033[0m"))
 }
 
 func TestAnsiBuffer_Clear(t *testing.T) {
@@ -25,7 +26,7 @@ func TestAnsiBuffer_Clear(t *testing.T) {
 
 	a := NewAnsi()
 	s := a.FgHi(Blue).A("some text")
-	g.Expect(s.GetBuffer()).To(Equal("\033[94;msome text"))
+	g.Expect(s.GetBuffer()).To(Equal("\033[94msome text"))
 	s.Clear()
 	g.Expect(s.GetBuffer()).To(Equal(""))
 }
@@ -35,9 +36,9 @@ func TestAnsiBuffer_FgHi(t *testing.T) {
 
 	a := NewAnsi()
 	s := a.FgHi(Blue).A("some text").String()
-	g.Expect(s).To(Equal("\033[94;msome text"))
+	g.Expect(s).To(Equal("\033[94msome text"))
 	s = a.FgHi(BrightYellow).A("text").String()
-	g.Expect(s).To(Equal("\033[38;5;11;mtext"))
+	g.Expect(s).To(Equal("\033[38;5;11mtext"))
 }
 
 func TestAnsiBuffer_BgHi(t *testing.T) {
@@ -45,9 +46,9 @@ func TestAnsiBuffer_BgHi(t *testing.T) {
 
 	a := NewAnsi()
 	s := a.BgHi(Blue).A("some text").String()
-	g.Expect(s).To(Equal("\033[104;msome text"))
+	g.Expect(s).To(Equal("\033[104msome text"))
 	s = a.BgHi(BrightYellow).A("text").String()
-	g.Expect(s).To(Equal("\033[48;5;11;mtext"))
+	g.Expect(s).To(Equal("\033[48;5;11mtext"))
 }
 
 func TestAnsiBuffer_ImplicitClear(t *testing.T) {
@@ -55,8 +56,8 @@ func TestAnsiBuffer_ImplicitClear(t *testing.T) {
 
 	a := NewAnsi()
 	s := a.FgHi(Blue).A("some text")
-	g.Expect(s.GetBuffer()).To(Equal("\033[94;msome text"))
-	g.Expect(s.String()).To(Equal("\033[94;msome text"))
+	g.Expect(s.GetBuffer()).To(Equal("\033[94msome text"))
+	g.Expect(s.String()).To(Equal("\033[94msome text"))
 	g.Expect(s.GetBuffer()).To(Equal(""))
 }
 
@@ -66,7 +67,7 @@ func TestAnsiBuffer_Fg(t *testing.T) {
 	a := NewAnsi()
 	s := a.Fg(Red).A("text").Reset().String()
 
-	g.Expect(s).To(Equal("\033[31;mtext\033[0;m"))
+	g.Expect(s).To(Equal("\033[31mtext\033[0m"))
 }
 
 func TestAnsiBuffer_Fg256(t *testing.T) {
@@ -75,7 +76,7 @@ func TestAnsiBuffer_Fg256(t *testing.T) {
 	a := NewAnsi()
 	s := a.Fg(DarkGoldenrod).A("text").Reset().String()
 
-	g.Expect(s).To(Equal("\033[38;5;136;mtext\033[0;m"))
+	g.Expect(s).To(Equal("\033[38;5;136mtext\033[0m"))
 }
 
 func TestAnsiBuffer_Fg256rgb(t *testing.T) {
@@ -84,7 +85,7 @@ func TestAnsiBuffer_Fg256rgb(t *testing.T) {
 	a := NewAnsi()
 	s := a.FgRgb6(5, 5, 0).A("text").Reset().String()
 
-	g.Expect(s).To(Equal("\033[38;5;226;mtext\033[0;m"))
+	g.Expect(s).To(Equal("\033[38;5;226mtext\033[0m"))
 }
 
 func TestAnsiBuffer_Bg(t *testing.T) {
@@ -93,7 +94,7 @@ func TestAnsiBuffer_Bg(t *testing.T) {
 	a := NewAnsi()
 	s := a.Bg(Red).A("text").Reset().String()
 
-	g.Expect(s).To(Equal("\033[41;mtext\033[0;m"))
+	g.Expect(s).To(Equal("\033[41mtext\033[0m"))
 }
 
 func TestAnsiBuffer_Bg256(t *testing.T) {
@@ -102,7 +103,7 @@ func TestAnsiBuffer_Bg256(t *testing.T) {
 	a := NewAnsi()
 	s := a.Bg(DarkGoldenrod).A("text").Reset().String()
 
-	g.Expect(s).To(Equal("\033[48;5;136;mtext\033[0;m"))
+	g.Expect(s).To(Equal("\033[48;5;136mtext\033[0m"))
 }
 
 func TestAnsiBuffer_Bg256rgb(t *testing.T) {
@@ -111,7 +112,7 @@ func TestAnsiBuffer_Bg256rgb(t *testing.T) {
 	a := NewAnsi()
 	s := a.BgRgb6(5, 5, 0).A("text").Reset().String()
 
-	g.Expect(s).To(Equal("\033[48;5;226;mtext\033[0;m"))
+	g.Expect(s).To(Equal("\033[48;5;226mtext\033[0m"))
 }
 
 func TestAnsiBuffer_FgRgb(t *testing.T) {
@@ -120,7 +121,7 @@ func TestAnsiBuffer_FgRgb(t *testing.T) {
 	a := NewAnsi()
 	s := a.FgRgb(255, 0, 10).A("text").Reset().String()
 
-	g.Expect(s).To(Equal("\033[38;2;255;0;10;mtext\033[0;m"))
+	g.Expect(s).To(Equal("\033[38;2;255;0;10mtext\033[0m"))
 }
 
 func TestAnsiBuffer_BgRgb(t *testing.T) {
@@ -129,7 +130,7 @@ func TestAnsiBuffer_BgRgb(t *testing.T) {
 	a := NewAnsi()
 	s := a.BgRgb(255, 1, 10).A("text").Reset().String()
 
-	g.Expect(s).To(Equal("\033[48;2;255;1;10;mtext\033[0;m"))
+	g.Expect(s).To(Equal("\033[48;2;255;1;10mtext\033[0m"))
 }
 
 func TestAnsiBuffer_FgRgbI(t *testing.T) {
@@ -138,7 +139,7 @@ func TestAnsiBuffer_FgRgbI(t *testing.T) {
 	a := NewAnsi()
 	s := a.FgRgbI(0xFF000A).A("text").Reset().String()
 
-	g.Expect(s).To(Equal("\033[38;2;255;0;10;mtext\033[0;m"))
+	g.Expect(s).To(Equal("\033[38;2;255;0;10mtext\033[0m"))
 }
 
 func TestAnsiBuffer_BgRgbI(t *testing.T) {
@@ -147,7 +148,7 @@ func TestAnsiBuffer_BgRgbI(t *testing.T) {
 	a := NewAnsi()
 	s := a.BgRgbI(0xFF000A).A("text").Reset().String()
 
-	g.Expect(s).To(Equal("\033[48;2;255;0;10;mtext\033[0;m"))
+	g.Expect(s).To(Equal("\033[48;2;255;0;10mtext\033[0m"))
 }
 
 func TestAnsiBuffer_Attr(t *testing.T) {
@@ -156,7 +157,7 @@ func TestAnsiBuffer_Attr(t *testing.T) {
 	a := NewAnsi()
 	s := a.Attr(Underline).A("text").String()
 
-	g.Expect(s).To(Equal("\033[4;mtext"))
+	g.Expect(s).To(Equal("\033[4mtext"))
 }
 
 func TestAnsiBuffer_Custom(t *testing.T) {
@@ -165,7 +166,7 @@ func TestAnsiBuffer_Custom(t *testing.T) {
 	a := NewAnsi()
 	s := a.EscM(11, 2, 4).A("text").String()
 
-	g.Expect(s).To(Equal("\033[11;2;4;mtext"))
+	g.Expect(s).To(Equal("\033[11;2;4mtext"))
 }
 
 func TestAnsiBuffer_Custom2(t *testing.T) {
@@ -174,7 +175,7 @@ func TestAnsiBuffer_Custom2(t *testing.T) {
 	a := NewAnsi()
 	s := a.Esc('n', ':', 4, 3).A("text").String()
 
-	g.Expect(s).To(Equal("\033[4:3:ntext"))
+	g.Expect(s).To(Equal("\033[4:3ntext"))
 }
 
 func TestAnsiBuffer_Disable(t *testing.T) {
@@ -187,7 +188,7 @@ func TestAnsiBuffer_Disable(t *testing.T) {
 	a.SetEnabled(true)
 	s := a.Fg(Blue).A("blue").String()
 
-	g.Expect(s).To(Equal("\033[31;mredwhite\033[34;mblue"))
+	g.Expect(s).To(Equal("\033[31mredwhite\033[34mblue"))
 }
 
 func TestAnsiBuffer_IsEnabled(t *testing.T) {
@@ -207,10 +208,10 @@ func TestAnsiBuffer_FgGray(t *testing.T) {
 	a := NewAnsi()
 
 	s := a.FgGrayF(0.5).A("text").String()
-	g.Expect(s).To(Equal("\033[38;5;243;mtext"))
+	g.Expect(s).To(Equal("\033[38;5;243mtext"))
 
 	s = a.FgGray(12).A("text").String()
-	g.Expect(s).To(Equal("\033[38;5;244;mtext"))
+	g.Expect(s).To(Equal("\033[38;5;244mtext"))
 }
 
 func TestAnsiBuffer_BgGray(t *testing.T) {
@@ -219,10 +220,10 @@ func TestAnsiBuffer_BgGray(t *testing.T) {
 	a := NewAnsi()
 
 	s := a.BgGrayF(0.5).A("text").String()
-	g.Expect(s).To(Equal("\033[48;5;243;mtext"))
+	g.Expect(s).To(Equal("\033[48;5;243mtext"))
 
 	s = a.BgGray(12).A("text").String()
-	g.Expect(s).To(Equal("\033[48;5;244;mtext"))
+	g.Expect(s).To(Equal("\033[48;5;244mtext"))
 }
 
 func TestAnsiBuffer_Gray(t *testing.T) {
@@ -245,7 +246,7 @@ func TestAnsiBuffer_S(t *testing.T) {
 
 	a := NewAnsi()
 	s := a.Fg(Fuchsia).S("this:%s", "is fuchsia").String()
-	g.Expect(s).To(Equal("\033[38;5;13;mthis:is fuchsia"))
+	g.Expect(s).To(Equal("\033[38;5;13mthis:is fuchsia"))
 }
 
 func TestAnsiFor(t *testing.T) {
@@ -291,13 +292,13 @@ func TestFgColorCompatibility(t *testing.T) {
 	a := NewAnsi()
 
 	s := a.FgRgb(255, 0, 0).A("text").String()
-	g.Expect(s).To(Equal("\033[38;2;255;0;0;mtext"))
+	g.Expect(s).To(Equal("\033[38;2;255;0;0mtext"))
 	a.ColorCompatibility = true
 	s = a.FgRgb(255, 0, 0).A("text").String()
-	g.Expect(s).To(Equal("\033[38;5;196;m\033[38;2;255;0;0;mtext"))
+	g.Expect(s).To(Equal("\033[38;5;196m\033[38;2;255;0;0mtext"))
 
 	s = a.FgRgb(127, 127, 127).A("text").String()
-	g.Expect(s).To(Equal("\033[38;5;243;m\033[38;2;127;127;127;mtext"))
+	g.Expect(s).To(Equal("\033[38;5;243m\033[38;2;127;127;127mtext"))
 }
 
 func TestBgColorCompatibility(t *testing.T) {
@@ -305,11 +306,27 @@ func TestBgColorCompatibility(t *testing.T) {
 	a := NewAnsi()
 
 	s := a.BgRgb(255, 0, 0).A("text").String()
-	g.Expect(s).To(Equal("\033[48;2;255;0;0;mtext"))
+	g.Expect(s).To(Equal("\033[48;2;255;0;0mtext"))
 	a.ColorCompatibility = true
 	s = a.BgRgb(255, 0, 0).A("text").String()
-	g.Expect(s).To(Equal("\033[48;5;196;m\033[48;2;255;0;0;mtext"))
+	g.Expect(s).To(Equal("\033[48;5;196m\033[48;2;255;0;0mtext"))
 
 	s = a.BgRgb(127, 127, 127).A("text").String()
-	g.Expect(s).To(Equal("\033[48;5;243;m\033[48;2;127;127;127;mtext"))
+	g.Expect(s).To(Equal("\033[48;5;243m\033[48;2;127;127;127mtext"))
+}
+
+func TestClearLine(t *testing.T) {
+	g := NewGomegaWithT(t)
+	a := NewAnsi()
+
+	s := a.ClearLine().Fg(Fuchsia).A("text").String()
+	g.Expect(s).To(Equal("\033[2K\033[38;5;13mtext"))
+}
+
+func TestClearEol(t *testing.T) {
+	g := NewGomegaWithT(t)
+	a := NewAnsi()
+
+	s := a.A("\r").ClearEol().Fg(Fuchsia).A("text").String()
+	g.Expect(s).To(Equal("\r\033[K\033[38;5;13mtext"))
 }
